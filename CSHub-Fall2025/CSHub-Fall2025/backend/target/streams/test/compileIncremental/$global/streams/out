@@ -1,0 +1,37 @@
+[debug] 
+[debug] Initial source changes: 
+[debug] 	removed:Set()
+[debug] 	added: Set()
+[debug] 	modified: Set(C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\test\UnitTest.java)
+[debug] Invalidated products: Set()
+[debug] External API changes: API Changes: Set()
+[debug] Modified binary dependencies: Set()
+[debug] Initial directly invalidated classes: Set(UnitTest)
+[debug] 
+[debug] Sources indirectly invalidated by:
+[debug] 	product: Set()
+[debug] 	binary dep: Set()
+[debug] 	external source: Set()
+[debug] All initially invalidated classes: Set(UnitTest)
+[debug] All initially invalidated sources:Set(C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\test\UnitTest.java)
+[info] Compiling 1 Java source to C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\target\scala-2.12\test-classes ...
+[debug] Attempting to call com.sun.tools.javac.api.JavacTool@4b697515 directly...
+[debug] Java compilation took 1.790517 s
+[debug] Java analysis took 0.0833155 s
+[debug] Java compilation + analysis took 1.8833863 s
+[info] Done compiling.
+[debug] Invalidating (transitively) by inheritance from UnitTest...
+[debug] Initial set of included nodes: Set(UnitTest)
+[debug] Invalidated by transitive inheritance dependency: Set(UnitTest)
+[debug] Change NamesChange(UnitTest,ModifiedNames(changes = UsedName(testAsync,[Default]))) invalidates 1 classes due to The UnitTest has the following regular definitions changed:
+[debug] 	UsedName(testAsync,[Default]).
+[debug] 	> by transitive inheritance: Set(UnitTest)
+[debug] 	> 
+[debug] 	> 
+[debug]         
+[debug] New invalidations:
+[debug] 	Set()
+[debug] Initial set of included nodes: Set()
+[debug] Previously invalidated, but (transitively) depend on new invalidations:
+[debug] 	Set()
+[debug] All newly invalidated classes after taking into account (previously) recompiled classes:Set()

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="sbt: com.github.javaparser:javaparser-symbol-solver-core:3.6.5:jar" external-system-id="SBT">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.github.javaparser/javaparser-symbol-solver-core/jars/javaparser-symbol-solver-core-3.6.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.github.javaparser/javaparser-symbol-solver-core/srcs/javaparser-symbol-solver-core-3.6.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sbt: com.itextpdf:font-asian:7.2.5:jar" external-system-id="SBT">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.itextpdf/font-asian/jars/font-asian-7.2.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

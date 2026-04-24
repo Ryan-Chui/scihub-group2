@@ -1,0 +1,9 @@
+[debug] Copy resource mappings: 
+[debug] 	(C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\conf\application.conf,C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\target\scala-2.12\classes\application.conf)
+[debug] 	(C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\conf\evolutions,C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\target\scala-2.12\classes\evolutions)
+[debug] 	(C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\conf\evolutions\default,C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\target\scala-2.12\classes\evolutions\default)
+[debug] 	(C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\conf\evolutions\default\1.sql,C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\target\scala-2.12\classes\evolutions\default\1.sql)
+[debug] 	(C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\conf\generated.keystore,C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\target\scala-2.12\classes\generated.keystore)
+[debug] 	(C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\conf\logback.xml,C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\target\scala-2.12\classes\logback.xml)
+[debug] 	(C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\conf\routes,C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\target\scala-2.12\classes\routes)
+[debug] 	(C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\conf\scriptFile.scala,C:\Users\ryan1\CSHub-Fall2025\CSHub-Fall2025\backend\target\scala-2.12\classes\scriptFile.scala)
