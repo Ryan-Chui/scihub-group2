@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="sbt: com.amazonaws:aws-java-sdk-cloudwatchrum:1.12.772:jar" external-system-id="SBT">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.amazonaws/aws-java-sdk-cloudwatchrum/jars/aws-java-sdk-cloudwatchrum-1.12.772.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.amazonaws/aws-java-sdk-cloudwatchrum/srcs/aws-java-sdk-cloudwatchrum-1.12.772-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

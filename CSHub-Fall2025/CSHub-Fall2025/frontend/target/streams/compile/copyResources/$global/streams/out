@@ -1,0 +1,5 @@
+[0m[[0mdebug[0m] [0mCopy resource mappings: [0m
+[0m[[0mdebug[0m] [0m	(C:\Users\ryan1\scihub-group2\CSHub-Fall2025\CSHub-Fall2025\frontend\conf\application.conf,C:\Users\ryan1\scihub-group2\CSHub-Fall2025\CSHub-Fall2025\frontend\target\scala-2.12\classes\application.conf)[0m
+[0m[[0mdebug[0m] [0m	(C:\Users\ryan1\scihub-group2\CSHub-Fall2025\CSHub-Fall2025\frontend\conf\generated.keystore,C:\Users\ryan1\scihub-group2\CSHub-Fall2025\CSHub-Fall2025\frontend\target\scala-2.12\classes\generated.keystore)[0m
+[0m[[0mdebug[0m] [0m	(C:\Users\ryan1\scihub-group2\CSHub-Fall2025\CSHub-Fall2025\frontend\conf\logback.xml,C:\Users\ryan1\scihub-group2\CSHub-Fall2025\CSHub-Fall2025\frontend\target\scala-2.12\classes\logback.xml)[0m
+[0m[[0mdebug[0m] [0m	(C:\Users\ryan1\scihub-group2\CSHub-Fall2025\CSHub-Fall2025\frontend\conf\routes,C:\Users\ryan1\scihub-group2\CSHub-Fall2025\CSHub-Fall2025\frontend\target\scala-2.12\classes\routes)[0m

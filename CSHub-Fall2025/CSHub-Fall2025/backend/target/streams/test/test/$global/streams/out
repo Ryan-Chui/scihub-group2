@@ -1,0 +1,56 @@
+[debug] javaOptions: Vector(-Djdk.tls.client.protocols=TLSv1.2)
+[debug] Forking tests - parallelism = false
+[debug] Create a single-thread test executor
+[debug] Runner for com.novocode.junit.JUnitFramework produced 4 initial tasks for 4 tests.
+[debug]   Running TaskDef(services.dblp.DBLPSearchQueryStringTest, sbt.ForkMain$AnnotatedFingerscan@2be50b47, false, [SuiteSelector])
+[debug] Test run started
+[debug] Test services.dblp.DBLPSearchQueryStringTest.testQueryPrefix started
+[debug] Test services.dblp.DBLPSearchQueryStringTest.testQueryPrefix finished, took 0.008 sec
+[debug] Test services.dblp.DBLPSearchQueryStringTest.testCompoundAnd started
+[debug] Test services.dblp.DBLPSearchQueryStringTest.testCompoundAnd finished, took 0.0 sec
+[debug] Test services.dblp.DBLPSearchQueryStringTest.testCompoundOr started
+[debug] Test services.dblp.DBLPSearchQueryStringTest.testCompoundOr finished, took 0.0 sec
+[debug] Test services.dblp.DBLPSearchQueryStringTest.testNestedCompoundAnd started
+[debug] Test services.dblp.DBLPSearchQueryStringTest.testNestedCompoundAnd finished, took 0.001 sec
+[debug] Test services.dblp.DBLPSearchQueryStringTest.testNestedCompoundOr started
+[debug] Test services.dblp.DBLPSearchQueryStringTest.testNestedCompoundOr finished, took 0.0 sec
+[debug] Test services.dblp.DBLPSearchQueryStringTest.testQueryExactly started
+[debug] Test services.dblp.DBLPSearchQueryStringTest.testQueryExactly finished, took 0.0 sec
+[debug] Test run finished: 0 failed, 0 ignored, 6 total, 0.023s
+[debug]     Produced 0 nested tasks and 6 events.
+[debug]   Running TaskDef(UnitTest, sbt.ForkMain$AnnotatedFingerscan@5157889a, false, [SuiteSelector])
+[debug] Test run started
+[debug] Test UnitTest.testTAJobGettersAndSetters started
+[debug] Test UnitTest.testTAJobGettersAndSetters finished, took 0.173 sec
+[debug] Test UnitTest.simpleCheck started
+[debug] Test UnitTest.simpleCheck finished, took 0.0 sec
+[debug] Test UnitTest.testAsync started
+[debug] Test UnitTest.testAsync finished, took 2.569 sec
+[debug] Test UnitTest.testCount started
+[debug] Test UnitTest.testCount finished, took 0.004 sec
+[debug] Test UnitTest.testTAJobConstructor started
+[debug] Test UnitTest.testTAJobConstructor finished, took 0.002 sec
+[debug] Test run finished: 0 failed, 0 ignored, 5 total, 2.752s
+[debug]     Produced 0 nested tasks and 5 events.
+[debug]   Running TaskDef(services.dblp.DBLPAuthorQueryTest, sbt.ForkMain$AnnotatedFingerscan@454beddc, false, [SuiteSelector])
+[debug] Test run started
+[debug] Test services.dblp.DBLPAuthorQueryTest.testAuthorQuery started
+[debug] Test services.dblp.DBLPAuthorQueryTest.testAuthorQuery finished, took 0.007 sec
+[debug] Test run finished: 0 failed, 0 ignored, 1 total, 0.008s
+[debug]     Produced 0 nested tasks and 1 events.
+[debug]   Running TaskDef(services.dblp.DBLPSearchQueryTest, sbt.ForkMain$AnnotatedFingerscan@79cba570, false, [SuiteSelector])
+[debug] Test run started
+[debug] Test services.dblp.DBLPSearchQueryTest.testQuery started
+[error] Test services.dblp.DBLPSearchQueryTest.testQuery failed: expected:<[]http://dblp.org/sear...> but was:<[/]http://dblp.org/sear...>, took 0.022 sec
+[debug] Test services.dblp.DBLPSearchQueryTest.testQuery finished, took 0.023 sec
+[debug] Test run finished: 1 failed, 0 ignored, 1 total, 0.024s
+[debug]     Produced 0 nested tasks and 1 events.
+[debug] Summary for JUnit not available.
+[error] Failed: Total 13, Failed 1, Errors 0, Passed 12
+[debug] Passed tests:
+[debug] 	UnitTest
+[debug] 	services.dblp.DBLPSearchQueryStringTest
+[debug] 	services.dblp.DBLPAuthorQueryTest
+[error] Failed tests:
+[error] 	services.dblp.DBLPSearchQueryTest
+[error] (Test / test) sbt.TestsFailedException: Tests unsuccessful
