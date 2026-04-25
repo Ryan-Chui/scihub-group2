@@ -1,6 +1,5 @@
 package utils;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,12 +11,19 @@ import lombok.ToString;
  **/
 @Setter
 @Getter
-@AllArgsConstructor
 @ToString
 public class ResponseStatus {
 
     private int code;
     private String msg;
+
+    public ResponseStatus() {
+    }
+
+    public ResponseStatus(int code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
 
     /**
      * SUCCESS

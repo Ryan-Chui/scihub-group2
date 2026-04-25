@@ -27,6 +27,8 @@
                         <h5>Your TA Job Application (ID: @id) has been successfully offered.</h5>
                     }@if(editType=="RajobOffer"){
                         <h5>Your RA Job Application (ID: @id) has been successfully offered.</h5>
+                    }@if(editType=="RajobOfferNotified"){
+                        <h5>Your RA Job Application (ID: @id) has been successfully offered and the applicant has been notified.</h5>
                     }@if(editType=="JobOffer"){
                         <h5>Your Job Application (ID: @id) has been successfully offered.</h5>
                     }@if(editType=="ChallengeOffer"){
@@ -68,6 +70,8 @@
                         location='@routes.UserController.mySpacePage()';
                     }else if('@editType' == "RajobOffer"){
                         location='@routes.UserController.mySpacePage()';
+                    }else if('@editType' == "RajobOfferNotified"){
+                        location='@routes.MailController.notificationsPage()';
                     }else if('@editType' == "SendOffer"){
                         location='@routes.UserController.mySpacePage()';
                     }
@@ -176,7 +180,11 @@
 @*                    document.getElementById('show').innerHTML="The page will be redirected to the challenge detail page in "*@
 @*                            +""+t+" seconds";*@
 @*                }*@
-@*                }else if('@editType' =="ChallengeOffer"){*@
+@*                else if ('@editType' == "RajobOfferNotified") {*@
+@*                    document.getElementById('show').innerHTML ="The page will be redirected to your notifications page in "*@
+@*                            +""+t+" seconds";*@
+@*                }*@
+@*                else if('@editType' =="ChallengeOffer"){*@
 @*                    document.getElementById('show').innerHTML="The page will be redirected to the challenge detail page in "*@
 @*                            +""+t+" seconds";*@
 @*                }*@

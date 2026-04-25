@@ -916,6 +916,13 @@ public class RAJobController extends Controller {
         String subject = "No-reply: Your [" + position + "] Application Has Been Approved";
 
         try {
+            Mail notification = new Mail();
+            notification.setTitle(subject);
+            notification.setContent(body);
+            notification.setSender(thisRajob.getRajobPublisher());
+            notification.setReceiver(thisRecipient);
+            notification.save();
+
             // Send individual mail.
             EmailUtils.sendMail(
                     config,
