@@ -208,9 +208,9 @@ GET           /rajob/professors                                                 
 ######################################### RAJob ########################################################################
 
 ########################################## Mail ########################################################################
-#GET           /mail/received/:userId                                                                       controllers.MailController.getReceivedMails(userId: Long)
-#GET           /mail/:mailId                                                                                controllers.MailController.getMail(mailId: Long)
-#POST          /mail/create                                                                                 controllers.MailController.createMail()
+GET           /mail/received/:userId                                                                       controllers.MailController.getReceivedMails(userId: Long)
+GET           /mail/:mailId                                                                                controllers.MailController.getMail(mailId: Long)
+POST          /mail/create                                                                                 controllers.MailController.createMail()
 #
 ########################################## Mail #########################################################################
 

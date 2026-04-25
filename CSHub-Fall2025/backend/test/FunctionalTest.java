@@ -4,7 +4,8 @@ import play.twirl.api.Content;
 import org.junit.Ignore;
 
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * A functional test starts a Play application for every test.
@@ -20,7 +21,7 @@ public class FunctionalTest extends WithApplication {
         // the application.
 
         Content html = views.html.index.render("Your new application is ready.");
-        assertThat("text/html").isEqualTo(html.contentType());
-        assertThat(html.body()).contains("Your new application is ready.");
+        assertEquals("text/html", html.contentType());
+        assertTrue(html.body().contains("Your new application is ready."));
     }
 }

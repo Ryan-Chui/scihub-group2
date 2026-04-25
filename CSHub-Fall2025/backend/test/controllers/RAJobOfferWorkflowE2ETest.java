@@ -11,29 +11,27 @@ import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.WithApplication;
+import support.RAJobTestHelper;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.POST;
 import static play.test.Helpers.contentAsString;
-import static play.test.Helpers.fakeApplication;
-import static play.test.Helpers.inMemoryDatabase;
 import static play.test.Helpers.route;
 
 public class RAJobOfferWorkflowE2ETest extends WithApplication {
 
     @Override
     protected Application provideApplication() {
-        Map<String, String> config = new HashMap<>(inMemoryDatabase());
-        config.put("db.default.url", "jdbc:h2:mem:play;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1");
-        config.put("play.evolutions.enabled", "true");
-        config.put("play.evolutions.db.default.enabled", "true");
-        config.put("play.evolutions.db.default.autoApply", "true");
-        return fakeApplication(config);
+        return play.test.Helpers.fakeApplication(RAJobTestHelper.buildBackendTestConfig("play-rajob-e2e"));
+    }
+
+    @org.junit.Before
+    public void setUpSchema() {
+        RAJobTestHelper.resetSchema();
     }
 
     @Test
@@ -52,23 +50,35 @@ public class RAJobOfferWorkflowE2ETest extends WithApplication {
                 .bodyJson(updatePayload);
 
         Result updateResult = route(app, updateRequest);
-        assertThat(updateResult).isNotNull();
-        assertThat(updateResult.status()).isEqualTo(OK);
+        assertNotNull(updateResult);
+        assertEquals(OK, updateResult.status());
 
         Http.RequestBuilder detailRequest = new Http.RequestBuilder()
                 .method(GET)
                 .uri("/rajob/rajobApplicationDetail/" + application.getId());
 
         Result detailResult = route(app, detailRequest);
-        assertThat(detailResult).isNotNull();
-        assertThat(detailResult.status()).isEqualTo(OK);
+        assertNotNull(detailResult);
+        assertEquals(OK, detailResult.status());
 
         JsonNode detailJson = Json.parse(contentAsString(detailResult));
-        assertThat(detailJson.path("status").asText()).isEqualTo("pending");
-        assertThat(detailJson.path("interviewSlot1").asText()).isEqualTo("2026-05-01T10:00");
-        assertThat(detailJson.has("interviewSlot2")).isTrue();
-        assertThat(detailJson.get("interviewSlot2").isNull()).isTrue();
-        assertThat(detailJson.path("interviewSlot3").asText()).isEqualTo("2026-05-02T14:30");
+        assertEquals("pending", detailJson.path("status").asText());
+        assertEquals("2026-05-01T10:00", detailJson.path("interviewSlot1").asText());
+        assertTrue(detailJson.has("interviewSlot2"));
+        assertTrue(detailJson.get("interviewSlot2").isNull());
+        assertEquals("2026-05-02T14:30", detailJson.path("interviewSlot3").asText());
+
+        Http.RequestBuilder notificationsRequest = new Http.RequestBuilder()
+                .method(GET)
+                .uri("/mail/received/" + application.getApplicant().getId());
+
+        Result notificationsResult = route(app, notificationsRequest);
+        assertNotNull(notificationsResult);
+        assertEquals(OK, notificationsResult.status());
+
+        JsonNode notificationsJson = Json.parse(contentAsString(notificationsResult));
+        assertEquals(1, notificationsJson.size());
+        assertTrue(notificationsJson.get(0).path("content").asText().contains("2026-05-01T10:00"));
     }
 
     private RAJobApplication seedRAJobApplication() {

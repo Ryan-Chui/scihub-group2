@@ -29,7 +29,9 @@ Faculty can now review RA applicants directly from an RA job and propose up to 3
 1. Open an RA job detail page and click **View Applicants**.
 2. Open an applicant via **View Details**.
 3. Click **Offer**, set optional **Interview Slot 1-3**, and submit.
-4. The slots are saved on the RA application detail and included in the offer email.
+4. The slots are saved on the RA application detail, create an in-app push notification for the applicant, and are included in the offer email.
+
+Push notification design notes and test guidance live in [docs/features/push-notification-system.md](/Users/zzyzxstar/Documents/GitHub/scihub-group2/CSHub-Fall2025/docs/features/push-notification-system.md).
 
 ## Contribution Guidelines
 For contributors, please follow these guidelines when making changes to the code:

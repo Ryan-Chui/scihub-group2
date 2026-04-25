@@ -14,6 +14,10 @@ sbt run
 
 And then go to http://localhost:9000 to see the running web application.
 
+## Push notifications
+
+The RA faculty offer workflow now uses the existing `mail` table as an in-app push notification store when interview slots are submitted for an applicant. The implementation notes, request flow, and test targets are documented in [docs/features/push-notification-system.md](/Users/zzyzxstar/Documents/GitHub/scihub-group2/CSHub-Fall2025/docs/features/push-notification-system.md).
+
 ## Controllers
 
 There are several demonstration files available in this template.

@@ -709,7 +709,13 @@ public class RAJobController extends Controller {
             //Logger.debug("sendOfferEmail result: " + emailResult.toString());
             if (sendNotif) {
                 Logger.debug("▶ Calling sendOfferEmail...");
-                Result emailResult = sendOfferEmail(rajobApplicationId, ccString);
+                Result emailResult = sendOfferEmail(
+                        rajobApplicationId,
+                        ccString,
+                        interviewSlot1,
+                        interviewSlot2,
+                        interviewSlot3
+                );
                 Logger.debug("sendOfferEmail result: " + emailResult.toString());
                 return emailResult;
             }
