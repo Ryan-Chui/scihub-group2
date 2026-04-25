@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.Config;
 import models.Job;
 import models.JobApplication;
+import models.Mail;
 import models.RAJob;
 import models.RAJobApplication;
 import play.Logger;
@@ -39,7 +40,7 @@ import static utils.Common.endIndexForPagination;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class RAJobController extends Controller {
+public class MailController extends Controller {
 
     @Inject
     Config config;
@@ -59,11 +60,11 @@ public class RAJobController extends Controller {
 
     /******************************* Constructor **********************************************************************/
     @Inject
-    public RAJobController(FormFactory factory,
-                           RAJobService rajobService,
-                           UserService userService,
-                           RAJobApplicationService rajobApplicationService,
-                           AccessTimesService accessTimesService,
+    public MailController(FormFactory factory,
+                            RAJobService rajobService,
+                            UserService userService,
+                            RAJobApplicationService rajobApplicationService,
+                            AccessTimesService accessTimesService,
                            FileService fileService) {
         rajobFormTemplate = factory.form(RAJob.class);
         myFactory = factory;
@@ -74,6 +75,12 @@ public class RAJobController extends Controller {
         this.userService = userService;
         this.accessTimesService = accessTimesService;
         this.fileService = fileService;
+    }
+
+    public Result notificationsPage() {
+        checkLoginStatus();
+        List<Mail> notificationsList = new ArrayList<>();
+        return ok(views.html.notifications.render(notificationsList));
     }
 
 
