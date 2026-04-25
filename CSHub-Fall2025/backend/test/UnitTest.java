@@ -8,8 +8,7 @@ import org.junit.Ignore;
 
 import java.util.concurrent.CompletionStage;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertEquals;
 import static play.test.Helpers.contentAsString;
 
 /**
@@ -22,7 +21,7 @@ public class UnitTest {
     @Test
     public void simpleCheck() {
         int a = 1 + 1;
-        assertThat(a).isEqualTo(2);
+        assertEquals(2, a);
     }
 
     // Unit test a controller
@@ -31,7 +30,7 @@ public class UnitTest {
     public void testCount() {
         final CountController controller = new CountController(() -> 49);
         Result result = controller.count();
-        assertThat(contentAsString(result)).isEqualTo("49");
+        assertEquals("49", contentAsString(result));
     }
 
     // Unit test a controller with async return
@@ -44,9 +43,7 @@ public class UnitTest {
             final AsyncController controller = new AsyncController(actorSystem, ec);
             final CompletionStage<Result> future = controller.message();
 
-            // Block until the result is completed
-            await().until(() -> future.toCompletableFuture().isDone());
-            assertThat(contentAsString(future.toCompletableFuture().join())).isEqualTo("Hi!");
+            assertEquals("Hi!", contentAsString(future.toCompletableFuture().join()));
         } finally {
             actorSystem.terminate();
         }

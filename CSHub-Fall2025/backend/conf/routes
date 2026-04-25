@@ -210,6 +210,13 @@ GET           /rajob/professors                                                 
 
 ######################################### RAJob ########################################################################
 
+########################################## Mail ########################################################################
+GET           /mail/received/:userId                                                                       controllers.MailController.getReceivedMails(userId: Long)
+GET           /mail/:mailId                                                                                controllers.MailController.getMail(mailId: Long)
+POST          /mail/create                                                                                 controllers.MailController.createMail()
+#
+########################################## Mail #########################################################################
+
 ########################################## TAJob #######################################################################
 POST          /tajob/addTAJob                                                                             controllers.TAJobController.addTAJob()
 POST          /tajob/updateTAJob/:tajobId                                                                 controllers.TAJobController.updateTAJob(tajobId: Long)

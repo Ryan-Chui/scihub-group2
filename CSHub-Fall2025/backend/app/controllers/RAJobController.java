@@ -17,6 +17,7 @@ import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import services.PushNotificationService;
 import services.RAJobService;
 import utils.Common;
 import utils.EmailUtils;
@@ -39,13 +40,15 @@ public class RAJobController extends Controller {
     public static final String RAJOB_IMAGE_KEY = "jobImage-";
 
     private final RAJobService rajobService;
+    private final PushNotificationService pushNotificationService;
 
     @Inject
     Config config;
 
     @Inject
-    public RAJobController(RAJobService rajobService) {
+    public RAJobController(RAJobService rajobService, PushNotificationService pushNotificationService) {
         this.rajobService = rajobService;
+        this.pushNotificationService = pushNotificationService;
     }
 
     /************************************************* Add RAJob *******************************************************/
@@ -144,7 +147,10 @@ public class RAJobController extends Controller {
             rajobApplication.setInterviewSlot2(InterviewSlotUtils.sanitizeOptionalText(json.path("interviewSlot2").asText(null)));
             rajobApplication.setInterviewSlot3(InterviewSlotUtils.sanitizeOptionalText(json.path("interviewSlot3").asText(null)));
             rajobApplication.update();
-            return ok(Json.toJson(rajobApplication));
+            if (pushNotificationService.hasInterviewSlots(rajobApplication)) {
+                pushNotificationService.createFacultyInterviewSlotNotification(rajobApplication);
+            }
+            return ok(buildRAJobApplicationResponse(rajobApplication));
         } catch (Exception e) {
             Logger.debug("Error updating RAJobApplication with id: " + rajobApplicationId + " - " + e.toString());
             e.printStackTrace();
@@ -449,7 +455,7 @@ public class RAJobController extends Controller {
 
         try {
             RAJobApplication rajobApplication = RAJobApplication.find.query().where().eq("id", rajobApplicationId).findOne();
-            return ok(Json.toJson(rajobApplication));
+            return ok(buildRAJobApplicationResponse(rajobApplication));
         } catch (Exception e) {
             Logger.debug("RAJobController.getRAJobApplicationById() exception : " + e.toString());
             return internalServerError("Internal Server Error JobController.getRAJobApplicationById() exception: " +
@@ -1012,39 +1018,42 @@ public class RAJobController extends Controller {
         Logger.info("sendOfferEmail: Received parameters - rajobApplicationId: " + rajobApplicationId);
 
         RAJobApplication thisApplication = RAJobApplication.find.byId(Long.parseLong(rajobApplicationId));
+        if (thisApplication == null) {
+            Logger.error("sendOfferEmail: No application found with id: " + rajobApplicationId);
+            return badRequest("RA job application not found");
+        }
+
+        thisApplication.setInterviewSlot1(InterviewSlotUtils.sanitizeOptionalText(
+                json.path("interviewSlot1").asText(thisApplication.getInterviewSlot1())));
+        thisApplication.setInterviewSlot2(InterviewSlotUtils.sanitizeOptionalText(
+                json.path("interviewSlot2").asText(thisApplication.getInterviewSlot2())));
+        thisApplication.setInterviewSlot3(InterviewSlotUtils.sanitizeOptionalText(
+                json.path("interviewSlot3").asText(thisApplication.getInterviewSlot3())));
+        thisApplication.update();
 
         Long rajobId = thisApplication.getAppliedRAJob().getId();
-        Long recipientId = thisApplication.getApplicant().getId();
 
         RAJob thisRajob = RAJob.find.byId(rajobId);
-        User thisRecipient = User.find.byId(recipientId);
+        User thisRecipient = pushNotificationService.getNotificationRecipient(thisApplication);
 
         if (thisRajob == null) {
             Logger.error("sendOfferEmail: No rajob found with id: " + rajobId);
-            return badRequest("User not found");
+            return badRequest("RA job not found");
         }
         if (thisRecipient == null) {
-            Logger.error("sendOfferEmail: No user found with id: " + recipientId);
+            Logger.error("sendOfferEmail: No user found for application id: " + rajobApplicationId);
             return badRequest("User not found");
         }
 
-        String position = thisRajob.getTitle();
         String email = thisRecipient.getEmail();
-
-        String body = "Dear Applicant,\n\n"
-                + "Your application for Position " + position + " has been reviewed and approved by the professor. Please reach out to the professor within five working days to discuss the details of the position.\n\n"
-                + InterviewSlotUtils.buildInterviewSlotsMessage(
-                        InterviewSlotUtils.sanitizeOptionalText(json.path("interviewSlot1").asText(thisApplication.getInterviewSlot1())),
-                        InterviewSlotUtils.sanitizeOptionalText(json.path("interviewSlot2").asText(thisApplication.getInterviewSlot2())),
-                        InterviewSlotUtils.sanitizeOptionalText(json.path("interviewSlot3").asText(thisApplication.getInterviewSlot3()))
-                )
-                + "This position will be reserved for you for five days. After that period, it will be made available to the public again.\n\n"
-                + "Thank you for your interest. We look forward to your response.\n\n"
-                + "Best Regards, \n\n"
-                + "SMU-Lyle-Sci-Hub Group";
+        String subject = pushNotificationService.buildFacultyOfferSubject(thisRajob.getTitle());
+        String body = pushNotificationService.buildFacultyOfferBody(
+                thisRajob.getTitle(),
+                thisApplication.getInterviewSlot1(),
+                thisApplication.getInterviewSlot2(),
+                thisApplication.getInterviewSlot3()
+        );
         Logger.info("sendOfferEmail: Email body constructed: " + body);
-
-        String subject = "No-reply: Your [" + position + "] Application Has Been Approved";
 
         try {
             // Send individual mail.
@@ -1194,5 +1203,18 @@ public class RAJobController extends Controller {
                 .collect(Collectors.toList());
 
         return ok(Json.toJson(professors));
+    }
+
+    private ObjectNode buildRAJobApplicationResponse(RAJobApplication rajobApplication) {
+        ObjectNode response = Json.newObject();
+        if (rajobApplication == null) {
+            return response;
+        }
+        response.put("id", rajobApplication.getId());
+        response.put("status", rajobApplication.getStatus());
+        response.put("interviewSlot1", rajobApplication.getInterviewSlot1());
+        response.put("interviewSlot2", rajobApplication.getInterviewSlot2());
+        response.put("interviewSlot3", rajobApplication.getInterviewSlot3());
+        return response;
     }
 }

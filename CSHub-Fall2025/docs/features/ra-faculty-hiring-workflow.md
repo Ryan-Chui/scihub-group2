@@ -3,6 +3,7 @@
 This feature adds faculty-facing RA hiring workflow enhancements:
 1. Faculty can open the RA applicant list from an RA job detail page.
 2. Faculty can propose up to three interview time slots when offering an applicant.
+3. Applicants receive an in-app push notification when faculty submits interview time slots.
 
 ## Database changes
 
@@ -55,6 +56,10 @@ Response:
 - `400 Bad Request` when `status` is missing
 - `404 Not Found` when `rajobApplicationId` does not exist
 
+Side effect:
+
+- Creates an in-app notification in `mail` when any interview slot is submitted.
+
 ### 2) Get RA application detail
 
 - **Method:** `GET`
@@ -103,8 +108,11 @@ Backend:
   - `sanitizeOptionalText(...)`
   - `buildInterviewSlotsMessage(...)`
 - `backend/app/controllers/RAJobController.java` (updated)
-  - `giveRAJobOffertoStudent(...)` now persists `interviewSlot1..3`
-  - `sendOfferEmail(...)` now includes interview slot text in email body
+  - `giveRAJobOffertoStudent(...)` now persists `interviewSlot1..3` and creates push notifications
+  - `sendOfferEmail(...)` now reuses persisted interview slot text in the email body
+- `backend/app/services/PushNotificationService.java` (new)
+  - Shared subject/body builder for push notifications and offer emails
+  - Persists in-app notifications as `Mail` rows
 
 Frontend:
 
@@ -121,7 +129,9 @@ Frontend:
 Tests:
 
 - `backend/test/utils/InterviewSlotUtilsTest.java` (pure unit tests)
+- `backend/test/services/PushNotificationServiceTest.java` (pure unit tests)
 - `backend/test/controllers/RAJobControllerTest.java` (controller integration tests for slot persistence/validation)
+- `backend/test/controllers/RAJobNotificationControllerTest.java` (controller integration tests for notification creation/fetch)
 - `backend/test/controllers/RAJobOfferWorkflowE2ETest.java` (E2E-style backend workflow test)
 
 ## Known limitations / future improvements

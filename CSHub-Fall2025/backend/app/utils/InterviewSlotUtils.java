@@ -18,6 +18,12 @@ public final class InterviewSlotUtils {
         return trimmedValue.isEmpty() ? null : trimmedValue;
     }
 
+    public static boolean hasInterviewSlots(String interviewSlot1, String interviewSlot2, String interviewSlot3) {
+        return sanitizeOptionalText(interviewSlot1) != null
+                || sanitizeOptionalText(interviewSlot2) != null
+                || sanitizeOptionalText(interviewSlot3) != null;
+    }
+
     public static String buildInterviewSlotsMessage(String interviewSlot1, String interviewSlot2, String interviewSlot3) {
         List<String> proposedSlots = Arrays.asList(interviewSlot1, interviewSlot2, interviewSlot3).stream()
                 .map(InterviewSlotUtils::sanitizeOptionalText)
