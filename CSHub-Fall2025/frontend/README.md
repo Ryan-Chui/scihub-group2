@@ -27,6 +27,16 @@ sbt run
 
 And then go to http://localhost:9000 to see the running web application.
 
+## Faculty RA hiring features
+
+Faculty can review and manage RA applicants from RA job pages:
+
+1. Open an RA job detail page and click **View Applicants**.
+2. Select an applicant and open **View Details**.
+3. Click **Offer** to submit the offer status, and optionally propose up to 3 interview time slots in the form before submitting.
+
+Submitted interview slots are saved on the RA application detail and included in the applicant offer email.
+
 ## Controllers
 
 There are several demonstration files available in this template.

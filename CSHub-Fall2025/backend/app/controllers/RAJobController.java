@@ -20,17 +20,18 @@ import play.mvc.Result;
 import services.RAJobService;
 import utils.Common;
 import utils.EmailUtils;
+import utils.InterviewSlotUtils;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static utils.Constants.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.stream.Collectors;
 
 public class RAJobController extends Controller {
     public static final String RAJOB_DEFAULT_SORT_CRITERIA = "title";
@@ -139,6 +140,9 @@ public class RAJobController extends Controller {
             }
             System.out.println("Status update to: " + json.get("status").asText());
             rajobApplication.setStatus(json.get("status").asText());
+            rajobApplication.setInterviewSlot1(InterviewSlotUtils.sanitizeOptionalText(json.path("interviewSlot1").asText(null)));
+            rajobApplication.setInterviewSlot2(InterviewSlotUtils.sanitizeOptionalText(json.path("interviewSlot2").asText(null)));
+            rajobApplication.setInterviewSlot3(InterviewSlotUtils.sanitizeOptionalText(json.path("interviewSlot3").asText(null)));
             rajobApplication.update();
             return ok(Json.toJson(rajobApplication));
         } catch (Exception e) {
@@ -898,6 +902,11 @@ public class RAJobController extends Controller {
 
         String body = "Dear Applicant,\n\n"
                 + "Your application for Position " + position + " has been reviewed and approved by the professor. Please reach out to the professor within five working days to discuss the details of the position.\n\n"
+                + InterviewSlotUtils.buildInterviewSlotsMessage(
+                        InterviewSlotUtils.sanitizeOptionalText(json.path("interviewSlot1").asText(thisApplication.getInterviewSlot1())),
+                        InterviewSlotUtils.sanitizeOptionalText(json.path("interviewSlot2").asText(thisApplication.getInterviewSlot2())),
+                        InterviewSlotUtils.sanitizeOptionalText(json.path("interviewSlot3").asText(thisApplication.getInterviewSlot3()))
+                )
                 + "This position will be reserved for you for five days. After that period, it will be made available to the public again.\n\n"
                 + "Thank you for your interest. We look forward to your response.\n\n"
                 + "Best Regards, \n\n"
