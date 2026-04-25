@@ -305,6 +305,8 @@
                                     Account Management</a></li>
                                 <li><a href="@routes.UserController.mySpacePage()">
                                     My Space</a></li>
+                                <li><a href="@routes.MailController.notificationsPage()">
+                                    Notifications</a></li>
                                 <li><a href="@routes.UserController.updatePasswordPage()">Update password</a></li>
                                 <li class="divider"></li>
                                 <li><a href="@routes.Application.logout()">Sign out</a></li>
@@ -397,6 +399,7 @@
                                 <ul class="sub-menu">
                                     <li><a href="@routes.UserController.userDetailPage(session.get("id").toLong)">@session.get("email")</a></li>
                                     <li><a href="@routes.UserController.userEditPage()">Account Management</a></li>
+                                    <li><a href="@routes.MailController.notificationsPage()">Notifications</a></li>
                                     <li><a href="@routes.UserController.updatePasswordPage()">Update password</a></li>
                                     <li><a href="@routes.Application.logout()">Sign out</a></li>
                                 </ul>

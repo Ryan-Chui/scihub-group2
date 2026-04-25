@@ -20,11 +20,16 @@ libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.12.772"
 
 libraryDependencies ++= Seq(
   javaJdbc,
-  javaWs
+  javaWs,
+
+  "org.assertj" % "assertj-core" % "3.24.2" % Test
+  ,
+  "org.awaitility" % "awaitility" % "4.2.0" % Test
 )
 
 
 libraryDependencies += "com.mysql" % "mysql-connector-j" % "8.4.0"
+libraryDependencies += "com.h2database" % "h2" % "2.2.224" % Test
 libraryDependencies ++= Seq(
   "com.google.code.gson" % "gson" % "2.6.2",
   "org.projectlombok" % "lombok" % "1.18.34",

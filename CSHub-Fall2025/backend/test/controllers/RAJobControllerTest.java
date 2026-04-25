@@ -1,6 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import models.Mail;
 import models.RAJob;
 import models.RAJobApplication;
 import models.User;
@@ -10,28 +11,29 @@ import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.WithApplication;
+import support.RAJobTestHelper;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static play.mvc.Http.Status.BAD_REQUEST;
 import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.POST;
-import static play.test.Helpers.inMemoryDatabase;
 import static play.test.Helpers.route;
 
 public class RAJobControllerTest extends WithApplication {
 
     @Override
     protected Application provideApplication() {
-        Map<String, String> config = new HashMap<>(inMemoryDatabase());
-        config.put("db.default.url", "jdbc:h2:mem:play;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1");
-        config.put("play.evolutions.enabled", "true");
-        config.put("play.evolutions.db.default.enabled", "true");
-        config.put("play.evolutions.db.default.autoApply", "true");
-        return play.test.Helpers.fakeApplication(config);
+        return play.test.Helpers.fakeApplication(RAJobTestHelper.buildBackendTestConfig("play-rajob-controller"));
+    }
+
+    @org.junit.Before
+    public void setUpSchema() {
+        RAJobTestHelper.resetSchema();
     }
 
     @Test
@@ -50,14 +52,14 @@ public class RAJobControllerTest extends WithApplication {
                 .bodyJson(payload);
 
         Result result = route(app, request);
-        assertThat(result).isNotNull();
-        assertThat(result.status()).isEqualTo(OK);
+        assertNotNull(result);
+        assertEquals(OK, result.status());
 
         RAJobApplication updated = RAJobApplication.find.byId(application.getId());
-        assertThat(updated.getStatus()).isEqualTo("pending");
-        assertThat(updated.getInterviewSlot1()).isEqualTo("2026-05-01T10:00");
-        assertThat(updated.getInterviewSlot2()).isNull();
-        assertThat(updated.getInterviewSlot3()).isEqualTo("2026-05-02T14:30");
+        assertEquals("pending", updated.getStatus());
+        assertEquals("2026-05-01T10:00", updated.getInterviewSlot1());
+        assertNull(updated.getInterviewSlot2());
+        assertEquals("2026-05-02T14:30", updated.getInterviewSlot3());
     }
 
     @Test
@@ -73,8 +75,8 @@ public class RAJobControllerTest extends WithApplication {
                 .bodyJson(payload);
 
         Result result = route(app, request);
-        assertThat(result).isNotNull();
-        assertThat(result.status()).isEqualTo(BAD_REQUEST);
+        assertNotNull(result);
+        assertEquals(BAD_REQUEST, result.status());
     }
 
     @Test
@@ -88,8 +90,8 @@ public class RAJobControllerTest extends WithApplication {
                 .bodyJson(payload);
 
         Result result = route(app, request);
-        assertThat(result).isNotNull();
-        assertThat(result.status()).isEqualTo(NOT_FOUND);
+        assertNotNull(result);
+        assertEquals(NOT_FOUND, result.status());
     }
 
     @Test
@@ -108,13 +110,41 @@ public class RAJobControllerTest extends WithApplication {
                 .bodyJson(payload);
 
         Result result = route(app, request);
-        assertThat(result).isNotNull();
-        assertThat(result.status()).isEqualTo(OK);
+        assertNotNull(result);
+        assertEquals(OK, result.status());
 
         RAJobApplication updated = RAJobApplication.find.byId(application.getId());
-        assertThat(updated.getInterviewSlot1()).isEqualTo("2026-05-01T10:00");
-        assertThat(updated.getInterviewSlot2()).isNull();
-        assertThat(updated.getInterviewSlot3()).isNull();
+        assertEquals("2026-05-01T10:00", updated.getInterviewSlot1());
+        assertNull(updated.getInterviewSlot2());
+        assertNull(updated.getInterviewSlot3());
+    }
+
+    @Test
+    public void giveRAJobOffertoStudentCreatesPushNotificationWhenSlotsProvided() {
+        RAJobApplication application = seedRAJobApplication();
+
+        ObjectNode payload = Json.newObject();
+        payload.put("status", "pending");
+        payload.put("interviewSlot1", "2026-05-01T10:00");
+
+        Http.RequestBuilder request = new Http.RequestBuilder()
+                .method(POST)
+                .uri("/rajob/updateRAjobApplicationStatus/" + application.getId())
+                .bodyJson(payload);
+
+        Result result = route(app, request);
+        assertNotNull(result);
+        assertEquals(OK, result.status());
+
+        List<Mail> notifications = Mail.find.query()
+                .where()
+                .eq("receiver.id", application.getApplicant().getId())
+                .findList();
+        assertEquals(1, notifications.size());
+        assertEquals(
+                "No-reply: Your [RA Position] Application Has Been Approved",
+                notifications.get(0).getTitle()
+        );
     }
 
     private RAJobApplication seedRAJobApplication() {

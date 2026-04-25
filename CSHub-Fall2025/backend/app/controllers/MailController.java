@@ -69,9 +69,17 @@ public class MailController extends Controller {
             return Common.badRequestWrapper("User id is null or empty");
         }
         User user = User.find.query().where().eq("id", userId).findOne();
+        if (user == null) {
+            return Common.badRequestWrapper("User not found");
+        }
         List<Mail> receivedEmails = new ArrayList<>();
         try {
             receivedEmails = user.getReceivedMail();
+            if (receivedEmails == null) {
+                receivedEmails = new ArrayList<>();
+            } else {
+                receivedEmails.sort((left, right) -> right.getTimestamp().compareTo(left.getTimestamp()));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
