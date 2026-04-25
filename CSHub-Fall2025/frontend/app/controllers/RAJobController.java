@@ -363,6 +363,63 @@ public class RAJobController extends Controller {
 
     /************************************************** End of My Posted RAJob ******************************************/
 
+    @With(OperationLoggingAction.class)
+    public Result interviewCalendar() {
+        checkLoginStatus();
+        try {
+            String userId = session("id");
+            JsonNode interviews = RESTfulCalls.getAPI(RESTfulCalls.getBackendAPIUrl(config,
+                    "/rajob/interviewCalendar/" + userId));
+            if (interviews == null || interviews.has("error") || !interviews.isArray()) {
+                interviews = Json.newArray();
+            }
+            return ok(raInterviewCalendar.render(interviews));
+        } catch (Exception e) {
+            Logger.debug("RAJobController.interviewCalendar() exception: " + e.toString());
+            Application.flashMsg(RESTfulCalls.createUserResponse(RESTfulCalls.UserResponseType.GENERALERROR));
+            return ok(generalError.render());
+        }
+    }
+
+    public Result rescheduleInterview(Long rajobApplicationId) {
+        checkLoginStatus();
+        try {
+            Map<String, String[]> formData = request().body().asFormUrlEncoded();
+            ObjectNode payload = Json.newObject();
+            payload.put("interviewTime", sanitizeOptionalFormValue(formData, "interviewTime"));
+            payload.put("note", sanitizeOptionalFormValue(formData, "note"));
+
+            JsonNode response = RESTfulCalls.postAPI(RESTfulCalls.getBackendAPIUrl(config,
+                    "/rajob/interview/" + rajobApplicationId + "/reschedule"), payload);
+            if (response == null || response.has("error")) {
+                Logger.warn("Failed to reschedule RA interview application " + rajobApplicationId);
+            }
+            return redirect(routes.RAJobController.interviewCalendar());
+        } catch (Exception e) {
+            Logger.error("rescheduleInterview failed", e);
+            return ok(editError.render("RA Interview"));
+        }
+    }
+
+    public Result cancelInterview(Long rajobApplicationId) {
+        checkLoginStatus();
+        try {
+            Map<String, String[]> formData = request().body().asFormUrlEncoded();
+            ObjectNode payload = Json.newObject();
+            payload.put("note", sanitizeOptionalFormValue(formData, "note"));
+
+            JsonNode response = RESTfulCalls.postAPI(RESTfulCalls.getBackendAPIUrl(config,
+                    "/rajob/interview/" + rajobApplicationId + "/cancel"), payload);
+            if (response == null || response.has("error")) {
+                Logger.warn("Failed to cancel RA interview application " + rajobApplicationId);
+            }
+            return redirect(routes.RAJobController.interviewCalendar());
+        } catch (Exception e) {
+            Logger.error("cancelInterview failed", e);
+            return ok(editError.render("RA Interview"));
+        }
+    }
+
     /************************************************** My Applied RAJob *************************************************/
     /**
      * get all ra jobs applied by user

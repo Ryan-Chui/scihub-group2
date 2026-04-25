@@ -11,6 +11,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.WithApplication;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +20,8 @@ import static play.mvc.Http.Status.BAD_REQUEST;
 import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.POST;
+import static play.test.Helpers.GET;
+import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.inMemoryDatabase;
 import static play.test.Helpers.route;
 
@@ -26,11 +29,22 @@ public class RAJobControllerTest extends WithApplication {
 
     @Override
     protected Application provideApplication() {
+        System.setProperty("config.file", new File("test/resources/test-constants.conf").getAbsolutePath());
         Map<String, String> config = new HashMap<>(inMemoryDatabase());
         config.put("db.default.url", "jdbc:h2:mem:play;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1");
+        config.put("db.default.user", "sa");
+        config.put("db.default.username", "sa");
+        config.put("db.default.password", "");
+        config.put("ebean.default", "models.*");
         config.put("play.evolutions.enabled", "true");
         config.put("play.evolutions.db.default.enabled", "true");
         config.put("play.evolutions.db.default.autoApply", "true");
+        config.put("aws.s3.bucketName", "test-bucket");
+        config.put("aws.fileNamePrefix", "test");
+        config.put("system.aws.access-key", "test");
+        config.put("system.aws.secret-access-key", "test");
+        config.put("system.aws.region", "us-east-1");
+        config.put("system.aws.bucket", "test-bucket");
         return play.test.Helpers.fakeApplication(config);
     }
 
@@ -115,6 +129,76 @@ public class RAJobControllerTest extends WithApplication {
         assertThat(updated.getInterviewSlot1()).isEqualTo("2026-05-01T10:00");
         assertThat(updated.getInterviewSlot2()).isNull();
         assertThat(updated.getInterviewSlot3()).isNull();
+    }
+
+    @Test
+    public void facultyCalendarReturnsScheduledInterviewsForFacultyJobs() {
+        RAJobApplication application = seedRAJobApplication();
+        application.setStatus("pending");
+        application.setInterviewSlot1("2026-05-01T10:00");
+        application.update();
+
+        Http.RequestBuilder request = new Http.RequestBuilder()
+                .method(GET)
+                .uri("/rajob/interviewCalendar/" + application.getAppliedRAJob().getRajobPublisher().getId());
+
+        Result result = route(app, request);
+        assertThat(result).isNotNull();
+        assertThat(result.status()).isEqualTo(OK);
+        assertThat(contentAsString(result)).contains("RA Position");
+        assertThat(contentAsString(result)).contains("student@example.com");
+        assertThat(contentAsString(result)).contains("2026-05-01T10:00");
+    }
+
+    @Test
+    public void rescheduleRAInterviewUpdatesStatusAndInterviewTime() {
+        RAJobApplication application = seedRAJobApplication();
+        application.setStatus("pending");
+        application.setInterviewSlot1("2026-05-01T10:00");
+        application.update();
+
+        ObjectNode payload = Json.newObject();
+        payload.put("interviewTime", "2026-05-03T09:15");
+        payload.put("note", "Please use the Teams link from the original message.");
+
+        Http.RequestBuilder request = new Http.RequestBuilder()
+                .method(POST)
+                .uri("/rajob/interview/" + application.getId() + "/reschedule")
+                .bodyJson(payload);
+
+        Result result = route(app, request);
+        assertThat(result).isNotNull();
+        assertThat(result.status()).isEqualTo(OK);
+
+        RAJobApplication updated = RAJobApplication.find.byId(application.getId());
+        assertThat(updated.getStatus()).isEqualTo("rescheduled");
+        assertThat(updated.getInterviewSlot1()).isEqualTo("2026-05-03T09:15");
+        assertThat(updated.getInterviewSlot2()).isNull();
+        assertThat(updated.getInterviewSlot3()).isNull();
+    }
+
+    @Test
+    public void cancelRAInterviewUpdatesStatus() {
+        RAJobApplication application = seedRAJobApplication();
+        application.setStatus("pending");
+        application.setInterviewSlot1("2026-05-01T10:00");
+        application.update();
+
+        ObjectNode payload = Json.newObject();
+        payload.put("note", "Position has been filled.");
+
+        Http.RequestBuilder request = new Http.RequestBuilder()
+                .method(POST)
+                .uri("/rajob/interview/" + application.getId() + "/cancel")
+                .bodyJson(payload);
+
+        Result result = route(app, request);
+        assertThat(result).isNotNull();
+        assertThat(result.status()).isEqualTo(OK);
+
+        RAJobApplication updated = RAJobApplication.find.byId(application.getId());
+        assertThat(updated.getStatus()).isEqualTo("canceled");
+        assertThat(updated.getInterviewSlot1()).isEqualTo("2026-05-01T10:00");
     }
 
     private RAJobApplication seedRAJobApplication() {

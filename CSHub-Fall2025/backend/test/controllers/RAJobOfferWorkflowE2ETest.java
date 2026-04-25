@@ -12,6 +12,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.WithApplication;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,11 +29,22 @@ public class RAJobOfferWorkflowE2ETest extends WithApplication {
 
     @Override
     protected Application provideApplication() {
+        System.setProperty("config.file", new File("test/resources/test-constants.conf").getAbsolutePath());
         Map<String, String> config = new HashMap<>(inMemoryDatabase());
         config.put("db.default.url", "jdbc:h2:mem:play;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1");
+        config.put("db.default.user", "sa");
+        config.put("db.default.username", "sa");
+        config.put("db.default.password", "");
+        config.put("ebean.default", "models.*");
         config.put("play.evolutions.enabled", "true");
         config.put("play.evolutions.db.default.enabled", "true");
         config.put("play.evolutions.db.default.autoApply", "true");
+        config.put("aws.s3.bucketName", "test-bucket");
+        config.put("aws.fileNamePrefix", "test");
+        config.put("system.aws.access-key", "test");
+        config.put("system.aws.secret-access-key", "test");
+        config.put("system.aws.region", "us-east-1");
+        config.put("system.aws.bucket", "test-bucket");
         return fakeApplication(config);
     }
 

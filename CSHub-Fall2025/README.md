@@ -31,6 +31,18 @@ Faculty can now review RA applicants directly from an RA job and propose up to 3
 3. Click **Offer**, set optional **Interview Slot 1-3**, and submit.
 4. The slots are saved on the RA application detail and included in the offer email.
 
+## Faculty RA interview calendar
+
+Faculty can view and manage scheduled RA interviews from the new **RA Interview Calendar** page.
+
+1. Log in as a faculty user and open **My Posted RAJobs**.
+2. Click **RA Interview Calendar**.
+3. Review scheduled and rescheduled interviews for RA jobs posted by the logged-in faculty user.
+4. To reschedule, enter a new interview date/time, add an optional note, and submit **Reschedule**.
+5. To cancel, add an optional reason and submit **Cancel**.
+
+Rescheduling updates the RA job application interview time and marks it `rescheduled`. Canceling marks the RA job application `canceled`. The backend attempts to notify the student using the existing email helper.
+
 ## Contribution Guidelines
 For contributors, please follow these guidelines when making changes to the code:
 
