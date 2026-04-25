@@ -45,5 +45,5 @@ libraryDependencies += "org.apache.commons" % "commons-email" % "1.5"
 libraryDependencies ++= Seq(
   "org.assertj" % "assertj-core" % "3.26.3" % Test,
   "org.awaitility" % "awaitility" % "4.2.1" % Test,
-  "com.h2database" % "h2" % "2.2.224" % Test
+  "com.h2database" % "h2" % "1.4.200" % Test
 )

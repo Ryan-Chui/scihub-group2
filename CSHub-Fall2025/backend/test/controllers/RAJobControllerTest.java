@@ -27,7 +27,7 @@ public class RAJobControllerTest extends WithApplication {
     @Override
     protected Application provideApplication() {
         Map<String, String> config = new HashMap<>(inMemoryDatabase());
-        config.put("db.default.url", "jdbc:h2:mem:play;MODE=MySQL;NON_KEYWORDS=USER,YEAR,MONTH,DATE,VALUE,KEY;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1");
+        config.put("db.default.url", "jdbc:h2:mem:play;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1");
         config.put("play.evolutions.enabled", "true");
         config.put("play.evolutions.db.default.enabled", "true");
         config.put("play.evolutions.db.default.autoApply", "true");
