@@ -663,8 +663,18 @@ public class RAJobController extends Controller {
         Logger.debug("Session email: " + sessionEmail);
 
         try {
+            Map<String, String[]> formUrlEncoded = request().body().asFormUrlEncoded();
+            Logger.debug("Parsed formUrlEncoded: " + formUrlEncoded);
+
+            String interviewSlot1 = sanitizeOptionalFormValue(formUrlEncoded, "interviewSlot1");
+            String interviewSlot2 = sanitizeOptionalFormValue(formUrlEncoded, "interviewSlot2");
+            String interviewSlot3 = sanitizeOptionalFormValue(formUrlEncoded, "interviewSlot3");
+
             ObjectNode jsonData = JsonNodeFactory.instance.objectNode();
             jsonData.put("status", rajobApplicationStatus);
+            jsonData.put("interviewSlot1", interviewSlot1);
+            jsonData.put("interviewSlot2", interviewSlot2);
+            jsonData.put("interviewSlot3", interviewSlot3);
 
             String statusUpdateUrl = RESTfulCalls.getBackendAPIUrl(config, Constants.RAJOB_APPLICATION_STATUS_UPDATE + rajobApplicationId);
             Logger.debug("Sending status update to: " + statusUpdateUrl);
@@ -678,10 +688,7 @@ public class RAJobController extends Controller {
                 return redirect(routes.RAJobController.rajobListPostedByUser(1));
             }
 
-            Map<String, String[]> formUrlEncoded = request().body().asFormUrlEncoded();
-            Logger.debug("Parsed formUrlEncoded: " + formUrlEncoded);
-
-            String[] ccArr = formUrlEncoded.get("ccSelected");
+            String[] ccArr = formUrlEncoded != null ? formUrlEncoded.get("ccSelected") : null;
             Logger.debug("Raw ccSelected from form: " + Arrays.toString(ccArr));
 
             String ccString = "";
@@ -697,7 +704,7 @@ public class RAJobController extends Controller {
             Logger.debug("Computed ccString to pass: " + ccString);
 
             Logger.debug("▶ Calling sendOfferEmail...");
-            Result emailResult = sendOfferEmail(rajobApplicationId, ccString);
+            Result emailResult = sendOfferEmail(rajobApplicationId, ccString, interviewSlot1, interviewSlot2, interviewSlot3);
             Logger.debug("sendOfferEmail result: " + emailResult.toString());
 
             return emailResult;
@@ -894,6 +901,11 @@ public class RAJobController extends Controller {
     }
 
     public Result sendOfferEmail(Long rajobApplicationId, String ccString) {
+        return sendOfferEmail(rajobApplicationId, ccString, null, null, null);
+    }
+
+    public Result sendOfferEmail(Long rajobApplicationId, String ccString,
+                                 String interviewSlot1, String interviewSlot2, String interviewSlot3) {
         checkLoginStatus();
         try {
             Logger.debug("sendOfferEmail(...) invoked. rajobApplicationId = " + rajobApplicationId
@@ -902,6 +914,9 @@ public class RAJobController extends Controller {
             ObjectNode offerData = Json.newObject();
             offerData.put("rajobApplicationId", rajobApplicationId);
             offerData.put("ccSelected", ccString);
+            offerData.put("interviewSlot1", sanitizeOptionalText(interviewSlot1));
+            offerData.put("interviewSlot2", sanitizeOptionalText(interviewSlot2));
+            offerData.put("interviewSlot3", sanitizeOptionalText(interviewSlot3));
 
             JsonNode offerResp = RESTfulCalls.postAPI(
                     RESTfulCalls.getBackendAPIUrl(config, "/rajob/offer"),
@@ -915,5 +930,24 @@ public class RAJobController extends Controller {
             Logger.error("sendOfferEmail failed: ", e);
             return ok(editError.render("RAJobapplication"));
         }
+    }
+
+    private String sanitizeOptionalFormValue(Map<String, String[]> formData, String key) {
+        if (formData == null) {
+            return null;
+        }
+        String[] values = formData.get(key);
+        if (values == null || values.length == 0) {
+            return null;
+        }
+        return sanitizeOptionalText(values[0]);
+    }
+
+    private String sanitizeOptionalText(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }

@@ -98,6 +98,9 @@ public class RAJobApplication {
 
     // rajob application status
     private String status;
+    private String interviewSlot1;
+    private String interviewSlot2;
+    private String interviewSlot3;
 
 
     /*********************************************** Constructors *****************************************************/

@@ -381,6 +381,9 @@ create table rajob_application (
   created_time                  varchar(255),
   is_active                     varchar(255),
   status                        varchar(255),
+  interview_slot1               varchar(255),
+  interview_slot2               varchar(255),
+  interview_slot3               varchar(255),
   constraint pk_rajob_application primary key (id)
 );
 

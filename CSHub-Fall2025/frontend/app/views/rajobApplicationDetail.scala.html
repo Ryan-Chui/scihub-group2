@@ -45,14 +45,38 @@
                                             <td>-</td>
                                         }
                                     </tr>
-                                    <tr>
-                                        <th style="max-width: 50px">Cover Letter</th>
-                                        @if(rajobApplication.getApplyCoverLetter!="null" && rajobApplication.getApplyCoverLetter != "") {
-                                            <td style="word-wrap: break-word;">@rajobApplication.getApplyCoverLetter</td>
-                                        } else {
-                                            <td>-</td>
-                                        }
-                                    </tr>
+                                     <tr>
+                                         <th style="max-width: 50px">Cover Letter</th>
+                                         @if(rajobApplication.getApplyCoverLetter!="null" && rajobApplication.getApplyCoverLetter != "") {
+                                             <td style="word-wrap: break-word;">@rajobApplication.getApplyCoverLetter</td>
+                                         } else {
+                                             <td>-</td>
+                                         }
+                                     </tr>
+                                     <tr>
+                                         <th style="max-width: 50px">Interview Slot 1</th>
+                                         @if(rajobApplication.getInterviewSlot1() != null && rajobApplication.getInterviewSlot1() != "") {
+                                             <td style="word-wrap: break-word;">@rajobApplication.getInterviewSlot1()</td>
+                                         } else {
+                                             <td>-</td>
+                                         }
+                                     </tr>
+                                     <tr>
+                                         <th style="max-width: 50px">Interview Slot 2</th>
+                                         @if(rajobApplication.getInterviewSlot2() != null && rajobApplication.getInterviewSlot2() != "") {
+                                             <td style="word-wrap: break-word;">@rajobApplication.getInterviewSlot2()</td>
+                                         } else {
+                                             <td>-</td>
+                                         }
+                                     </tr>
+                                     <tr>
+                                         <th style="max-width: 50px">Interview Slot 3</th>
+                                         @if(rajobApplication.getInterviewSlot3() != null && rajobApplication.getInterviewSlot3() != "") {
+                                             <td style="word-wrap: break-word;">@rajobApplication.getInterviewSlot3()</td>
+                                         } else {
+                                             <td>-</td>
+                                         }
+                                     </tr>
 
                                     <tr>
 
@@ -201,11 +225,23 @@
                                 onsubmit="return getHTML()"
                                 action="@routes.RAJobController.rajobApplicationStatusChange(rajobApplication.getId, "pending")">
 
-                            @if(userTypes == "1" && rajobApplication.getAppliedRAJob.getStatus() !="closed" ) {
-                                <a class="waves-effect waves-light btn modal-trigger blue darken-2"
-                                href="#ccModal">Select CC Recipients</a>
-                                <input type="hidden" name="ccSelected" id="ccSelectedHidden" value="" />
-                            }
+                             @if(userTypes == "1" && rajobApplication.getAppliedRAJob.getStatus() !="closed" ) {
+                                 <a class="waves-effect waves-light btn modal-trigger blue darken-2"
+                                 href="#ccModal">Select CC Recipients</a>
+                                 <input type="hidden" name="ccSelected" id="ccSelectedHidden" value="" />
+                                 <div class="input-field" style="margin-top: 1rem;">
+                                     <label class="active" for="interviewSlot1">Interview Slot 1</label>
+                                     <input id="interviewSlot1" name="interviewSlot1" type="datetime-local" value="@StringUtils.defaultString(rajobApplication.getInterviewSlot1())">
+                                 </div>
+                                 <div class="input-field">
+                                     <label class="active" for="interviewSlot2">Interview Slot 2</label>
+                                     <input id="interviewSlot2" name="interviewSlot2" type="datetime-local" value="@StringUtils.defaultString(rajobApplication.getInterviewSlot2())">
+                                 </div>
+                                 <div class="input-field">
+                                     <label class="active" for="interviewSlot3">Interview Slot 3</label>
+                                     <input id="interviewSlot3" name="interviewSlot3" type="datetime-local" value="@StringUtils.defaultString(rajobApplication.getInterviewSlot3())">
+                                 </div>
+                             }
 
 
                             @if(userTypes == "1" && rajobApplication.getAppliedRAJob.getStatus() !="closed" ) {

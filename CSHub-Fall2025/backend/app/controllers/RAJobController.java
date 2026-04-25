@@ -139,6 +139,9 @@ public class RAJobController extends Controller {
             }
             System.out.println("Status update to: " + json.get("status").asText());
             rajobApplication.setStatus(json.get("status").asText());
+            rajobApplication.setInterviewSlot1(sanitizeOptionalText(json.path("interviewSlot1").asText(null)));
+            rajobApplication.setInterviewSlot2(sanitizeOptionalText(json.path("interviewSlot2").asText(null)));
+            rajobApplication.setInterviewSlot3(sanitizeOptionalText(json.path("interviewSlot3").asText(null)));
             rajobApplication.update();
             return ok(Json.toJson(rajobApplication));
         } catch (Exception e) {
@@ -898,6 +901,11 @@ public class RAJobController extends Controller {
 
         String body = "Dear Applicant,\n\n"
                 + "Your application for Position " + position + " has been reviewed and approved by the professor. Please reach out to the professor within five working days to discuss the details of the position.\n\n"
+                + buildInterviewSlotsMessage(
+                        sanitizeOptionalText(json.path("interviewSlot1").asText(thisApplication.getInterviewSlot1())),
+                        sanitizeOptionalText(json.path("interviewSlot2").asText(thisApplication.getInterviewSlot2())),
+                        sanitizeOptionalText(json.path("interviewSlot3").asText(thisApplication.getInterviewSlot3()))
+                )
                 + "This position will be reserved for you for five days. After that period, it will be made available to the public again.\n\n"
                 + "Thank you for your interest. We look forward to your response.\n\n"
                 + "Best Regards, \n\n"
@@ -922,6 +930,31 @@ public class RAJobController extends Controller {
             Logger.error("Send offer email email failed!");
         }
         return ok();
+    }
+
+    private String sanitizeOptionalText(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmedValue = value.trim();
+        return trimmedValue.isEmpty() ? null : trimmedValue;
+    }
+
+    private String buildInterviewSlotsMessage(String interviewSlot1, String interviewSlot2, String interviewSlot3) {
+        List<String> proposedSlots = Arrays.asList(interviewSlot1, interviewSlot2, interviewSlot3).stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (proposedSlots.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder slotMessage = new StringBuilder();
+        slotMessage.append("The professor proposed the following interview time slots:\n");
+        for (int i = 0; i < proposedSlots.size(); i++) {
+            slotMessage.append(i + 1).append(". ").append(proposedSlots.get(i)).append('\n');
+        }
+        slotMessage.append('\n');
+        return slotMessage.toString();
     }
 
     public Result sendRAJobPostedEmail() {
