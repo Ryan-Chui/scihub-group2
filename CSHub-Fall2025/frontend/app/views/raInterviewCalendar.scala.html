@@ -1,0 +1,83 @@
+@(interviews: com.fasterxml.jackson.databind.JsonNode)
+
+@import helper._
+
+@main("RA Interview Calendar") {
+    <div class="container">
+        <div class="card-panel">
+            <h4 class="center">RA Interview Calendar</h4>
+
+            @if(interviews == null || !interviews.isArray() || interviews.size() == 0) {
+                <h5 class="center">No scheduled RA interviews found.</h5>
+                <div class="center">
+                    <a href="@routes.RAJobController.rajobListPostedByUser(1)" class="btn waves-effect waves-light blue darken-2">Back to Posted RA Jobs</a>
+                </div>
+            } else {
+                <table class="striped responsive-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>RA Job</th>
+                            <th>Student</th>
+                            <th>Email</th>
+                            <th>Interview Time</th>
+                            <th>Status</th>
+                            <th>Reschedule</th>
+                            <th>Cancel</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for(i <- 0 until interviews.size()) {
+                        @defining(interviews.get(i)) { interview =>
+                            @defining(interview.path("interviewTime").asText("")) { interviewTime =>
+                                <tr>
+                                    <td>
+                                        @if(interviewTime.length >= 10) {
+                                            @interviewTime.substring(0, 10)
+                                        } else {
+                                            -
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@routes.RAJobController.rajobDetail(interview.path("rajobId").asLong())">
+                                            @interview.path("rajobTitle").asText("")
+                                        </a>
+                                    </td>
+                                    <td>@interview.path("studentName").asText("-")</td>
+                                    <td>@interview.path("studentEmail").asText("-")</td>
+                                    <td>@interviewTime</td>
+                                    <td>@interview.path("status").asText("-")</td>
+                                    <td>
+                                        <form method="post" action="@routes.RAJobController.rescheduleInterview(interview.path("applicationId").asLong())">
+                                            <div class="input-field">
+                                                <input name="interviewTime" type="datetime-local" value="@interviewTime" required>
+                                            </div>
+                                            <div class="input-field">
+                                                <input name="note" type="text">
+                                                <label>Optional note</label>
+                                            </div>
+                                            <button type="submit" class="btn waves-effect waves-light blue darken-2">Reschedule</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form method="post" action="@routes.RAJobController.cancelInterview(interview.path("applicationId").asLong())">
+                                            <div class="input-field">
+                                                <input name="note" type="text">
+                                                <label>Optional reason</label>
+                                            </div>
+                                            <button type="submit" class="btn waves-effect waves-light red darken-2">Cancel</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                    </tbody>
+                </table>
+                <div class="center" style="margin-top: 20px;">
+                    <a href="@routes.RAJobController.rajobListPostedByUser(1)" class="btn waves-effect waves-light blue darken-2">Back to Posted RA Jobs</a>
+                </div>
+            }
+        </div>
+    </div>
+}

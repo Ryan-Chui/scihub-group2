@@ -290,6 +290,9 @@ GET         /rajob/rajobApplicationDetail/:rajobApplicationId                   
 GET         /rajob/rajobList/:pageNum                                                           controllers.RAJobController.rajobList(pageNum: Integer, sortCriteria: String ?= "")
 GET         /rajob/rajobListPostedByUser/:pageNum                                               controllers.RAJobController.rajobListPostedByUser(pageNum: Integer)
 GET         /rajob/rajobListAppliedByUser/:pageNum                                              controllers.RAJobController.rajobListAppliedByUser(pageNum: Integer)
+GET         /rajob/interviewCalendar                                                            controllers.RAJobController.interviewCalendar()
+POST        /rajob/interview/:rajobApplicationId/reschedule                                      controllers.RAJobController.rescheduleInterview(rajobApplicationId: Long)
+POST        /rajob/interview/:rajobApplicationId/cancel                                          controllers.RAJobController.cancelInterview(rajobApplicationId: Long)
 
 GET         /rajob/rajobDetail/:rajobId                                                         controllers.RAJobController.rajobDetail(rajobId: Long)
 GET         /rajob/searchPage                                                                   controllers.RAJobController.searchPage()

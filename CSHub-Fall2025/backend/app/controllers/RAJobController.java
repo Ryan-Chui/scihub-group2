@@ -486,6 +486,137 @@ public class RAJobController extends Controller {
         }
     }
 
+    public Result getRAInterviewCalendar(Long facultyId) {
+        try {
+            if (facultyId == null) {
+                return Common.badRequestWrapper("facultyId is null or empty.");
+            }
+
+            List<RAJobApplication> applications = RAJobApplication.find.query()
+                    .where().eq("appliedRAJob.rajobPublisher.id", facultyId)
+                    .findList();
+
+            ArrayNode calendar = Json.newArray();
+            for (RAJobApplication application : applications) {
+                if (!hasInterviewTime(application) || isCanceledInterview(application)) {
+                    continue;
+                }
+                calendar.add(buildInterviewCalendarJson(application));
+            }
+
+            List<JsonNode> sorted = new ArrayList<>();
+            calendar.forEach(sorted::add);
+            sorted.sort(Comparator.comparing(node -> node.path("interviewTime").asText("")));
+
+            ArrayNode sortedCalendar = Json.newArray();
+            sorted.forEach(sortedCalendar::add);
+            return ok(sortedCalendar);
+        } catch (Exception e) {
+            Logger.debug("RAJobController.getRAInterviewCalendar exception: " + e.toString());
+            return internalServerError("RAJobController.getRAInterviewCalendar exception: " + e.toString());
+        }
+    }
+
+    public Result rescheduleRAInterview(Long rajobApplicationId) {
+        return updateInterviewSchedule(rajobApplicationId, "rescheduled");
+    }
+
+    public Result cancelRAInterview(Long rajobApplicationId) {
+        return updateInterviewSchedule(rajobApplicationId, "canceled");
+    }
+
+    private Result updateInterviewSchedule(Long rajobApplicationId, String newStatus) {
+        try {
+            JsonNode json = request().body().asJson();
+            if (json == null) {
+                return badRequest("Interview update expects Json data.");
+            }
+
+            RAJobApplication application = RAJobApplication.find.byId(rajobApplicationId);
+            if (application == null) {
+                return notFound("RAJobApplication not found.");
+            }
+
+            String note = InterviewSlotUtils.sanitizeOptionalText(json.path("note").asText(null));
+            if ("rescheduled".equals(newStatus)) {
+                String interviewTime = InterviewSlotUtils.sanitizeOptionalText(json.path("interviewTime").asText(null));
+                if (interviewTime == null) {
+                    return badRequest("interviewTime is required for rescheduling.");
+                }
+                application.setInterviewSlot1(interviewTime);
+                application.setInterviewSlot2(null);
+                application.setInterviewSlot3(null);
+            }
+
+            application.setStatus(newStatus);
+            application.update();
+
+            boolean notificationSent = notifyStudentInterviewChanged(application, newStatus, note);
+            ObjectNode response = buildInterviewCalendarJson(application);
+            response.put("notificationSent", notificationSent);
+            return ok(response);
+        } catch (Exception e) {
+            Logger.debug("RAJobController.updateInterviewSchedule exception: " + e.toString());
+            return internalServerError("RAJobController.updateInterviewSchedule exception: " + e.toString());
+        }
+    }
+
+    private boolean hasInterviewTime(RAJobApplication application) {
+        return firstInterviewTime(application) != null;
+    }
+
+    private boolean isCanceledInterview(RAJobApplication application) {
+        return application.getStatus() != null && application.getStatus().equalsIgnoreCase("canceled");
+    }
+
+    private String firstInterviewTime(RAJobApplication application) {
+        String slot1 = InterviewSlotUtils.sanitizeOptionalText(application.getInterviewSlot1());
+        if (slot1 != null) return slot1;
+        String slot2 = InterviewSlotUtils.sanitizeOptionalText(application.getInterviewSlot2());
+        if (slot2 != null) return slot2;
+        return InterviewSlotUtils.sanitizeOptionalText(application.getInterviewSlot3());
+    }
+
+    private ObjectNode buildInterviewCalendarJson(RAJobApplication application) {
+        ObjectNode row = Json.newObject();
+        RAJob rajob = application.getAppliedRAJob();
+        User applicant = application.getApplicant();
+
+        row.put("applicationId", application.getId());
+        row.put("rajobId", rajob != null ? rajob.getId() : 0L);
+        row.put("rajobTitle", rajob != null ? rajob.getTitle() : "");
+        row.put("studentName", applicant != null ? applicant.getUserName() : "");
+        row.put("studentEmail", applicant != null ? applicant.getEmail() : "");
+        row.put("interviewTime", firstInterviewTime(application));
+        row.put("status", application.getStatus());
+        return row;
+    }
+
+    private boolean notifyStudentInterviewChanged(RAJobApplication application, String status, String note) {
+        User applicant = application.getApplicant();
+        RAJob rajob = application.getAppliedRAJob();
+        if (applicant == null || applicant.getEmail() == null || applicant.getEmail().trim().isEmpty()) {
+            Logger.warn("Interview update notification skipped because applicant email is missing.");
+            return false;
+        }
+
+        String jobTitle = rajob != null ? rajob.getTitle() : "RA position";
+        String subject = "No-reply: RA Interview " + ("canceled".equals(status) ? "Canceled" : "Rescheduled");
+        String body = "Dear Applicant,\n\n"
+                + "Your interview for \"" + jobTitle + "\" has been " + status + ".\n"
+                + ("canceled".equals(status) ? "" : "New interview time: " + firstInterviewTime(application) + "\n")
+                + (note == null ? "" : "Note: " + note + "\n")
+                + "\nBest Regards,\nSMU-Lyle-Sci-Hub Group";
+
+        try {
+            EmailUtils.sendIndividualEmail(config, applicant.getEmail(), subject, body);
+            return true;
+        } catch (Exception e) {
+            Logger.error("Interview update email failed for application " + application.getId(), e);
+            return false;
+        }
+    }
+
     /**
      * This method returns all RA jobs applied by a specific applicant given the applicant's userId.
      *
