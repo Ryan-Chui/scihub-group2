@@ -13,6 +13,7 @@ import play.test.WithApplication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static play.mvc.Http.Status.BAD_REQUEST;
+import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.POST;
 import static play.test.Helpers.inMemoryDatabase;
@@ -66,6 +67,46 @@ public class RAJobControllerTest extends WithApplication {
         Result result = route(app, request);
         assertThat(result).isNotNull();
         assertThat(result.status()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void giveRAJobOffertoStudentReturnsNotFoundForMissingApplication() {
+        ObjectNode payload = Json.newObject();
+        payload.put("status", "pending");
+
+        Http.RequestBuilder request = new Http.RequestBuilder()
+                .method(POST)
+                .uri("/rajob/updateRAjobApplicationStatus/999999")
+                .bodyJson(payload);
+
+        Result result = route(app, request);
+        assertThat(result).isNotNull();
+        assertThat(result.status()).isEqualTo(NOT_FOUND);
+    }
+
+    @Test
+    public void giveRAJobOffertoStudentTrimsAndNormalizesInterviewSlots() {
+        RAJobApplication application = seedRAJobApplication();
+
+        ObjectNode payload = Json.newObject();
+        payload.put("status", "pending");
+        payload.put("interviewSlot1", "   2026-05-01T10:00   ");
+        payload.put("interviewSlot2", "   ");
+        payload.put("interviewSlot3", "\n\t");
+
+        Http.RequestBuilder request = new Http.RequestBuilder()
+                .method(POST)
+                .uri("/rajob/updateRAjobApplicationStatus/" + application.getId())
+                .bodyJson(payload);
+
+        Result result = route(app, request);
+        assertThat(result).isNotNull();
+        assertThat(result.status()).isEqualTo(OK);
+
+        RAJobApplication updated = RAJobApplication.find.byId(application.getId());
+        assertThat(updated.getInterviewSlot1()).isEqualTo("2026-05-01T10:00");
+        assertThat(updated.getInterviewSlot2()).isNull();
+        assertThat(updated.getInterviewSlot3()).isNull();
     }
 
     private RAJobApplication seedRAJobApplication() {

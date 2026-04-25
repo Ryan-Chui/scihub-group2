@@ -41,3 +41,8 @@ fork in run := true
 javaOptions += "-Djdk.tls.client.protocols=TLSv1.2"
 
 libraryDependencies += "org.apache.commons" % "commons-email" % "1.5"
+
+libraryDependencies ++= Seq(
+  "org.assertj" % "assertj-core" % "3.26.3" % Test,
+  "org.awaitility" % "awaitility" % "4.2.1" % Test
+)
