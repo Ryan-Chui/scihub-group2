@@ -11,7 +11,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.inject.Inject;
-import com.mysql.cj.log.Log;
 import com.typesafe.config.Config;
 import io.ebean.Ebean;
 import io.ebean.Expr;
