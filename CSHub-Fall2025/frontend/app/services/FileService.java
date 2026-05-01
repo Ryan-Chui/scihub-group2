@@ -41,18 +41,22 @@ public class FileService {
             String fullUrl = RESTfulCalls.getBackendAPIUrl(config, apiPath);
 
             JsonNode response = RESTfulCalls.getAPI(fullUrl);
-            Logger.info("Received response from backend API: " + response.toString());
+            if (response == null) {
+                Logger.warn("checkFile: no response from backend for {}", fullUrl);
+                return false;
+            }
+            if (response.has("error")) {
+                Logger.warn("checkFile: backend reported error for {} -> {}", fullUrl, response.get("error"));
+                return false;
+            }
 
             if (response.has("dbRecord") && !response.get("dbRecord").isNull()) {
                 return true;
-            } else {
-                Logger.warn("Response does not contain 'dbRecord'.");
             }
         } catch (Exception e) {
-            Logger.error("Exception occurred in checkFile: " + e.getMessage(), e);
+            Logger.warn("checkFile: failed for tableName={}, fileType={}, tableRecorderId={}: {}",
+                    tableName, fileType, tableRecorderId, e.toString());
         }
-        Logger.info("Returning false. File check failed for tableName: " + tableName +
-                ", fileType: " + fileType + ", tableRecorderId: " + tableRecorderId);
         return false;
     }
 

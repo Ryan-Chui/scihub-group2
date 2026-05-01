@@ -80,6 +80,19 @@ public class MailController extends Controller {
     public Result notificationsPage() {
         checkLoginStatus();
         List<Mail> notificationsList = new ArrayList<>();
+        try {
+            String userId = session("id");
+            JsonNode response = RESTfulCalls.getAPI(
+                    RESTfulCalls.getBackendAPIUrl(config, "/mail/received/" + userId)
+            );
+            if (response != null && !response.has("error") && response.isArray()) {
+                notificationsList = Mail.deserializeJsonToMailList(response);
+            } else {
+                Logger.warn("notificationsPage: backend returned invalid response for user {}", userId);
+            }
+        } catch (Exception e) {
+            Logger.warn("notificationsPage: failed to load notifications. {}", e.toString());
+        }
         return ok(views.html.notifications.render(notificationsList));
     }
 

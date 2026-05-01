@@ -25,12 +25,16 @@
                                 <tr>
                                     <tr>
                                         <th style="max-width: 50px">RA Job Name</th>
-                                        <td style="word-wrap: break-word;">@rajobApplication.getAppliedRAJob.getTitle</td>
+                                        @if(rajobApplication.getAppliedRAJob != null && rajobApplication.getAppliedRAJob.getTitle != null && rajobApplication.getAppliedRAJob.getTitle != "") {
+                                            <td style="word-wrap: break-word;">@rajobApplication.getAppliedRAJob.getTitle</td>
+                                        } else {
+                                            <td>-</td>
+                                        }
                                     </tr>
 
                                     <tr>
                                         <th style="max-width: 50px">Applicant Name</th>
-                                        @if(rajobApplication.getApplicant!="null" && rajobApplication.getApplicant != "") {
+                                        @if(rajobApplication.getApplicant != null && rajobApplication.getApplicant.getUserName != null && rajobApplication.getApplicant.getUserName != "") {
                                             <td style="word-wrap: break-word;">@rajobApplication.getApplicant.getUserName</td>
                                         } else {
                                             <td>-</td>
@@ -219,52 +223,65 @@
                     <div class="row center">
 
 @*                        <form class="form-signin" enctype="multipart/form-data" id="editTechnologyForm" method="post" onsubmit="return getHTML()" action="@routes.RAJobController.rajobStatueChange(rajobApplication.getAppliedRAJob.getId, "pending")">*@
-                        <form class="form-signin"
-                                id="editTechnologyForm"
-                                method="post"
-                                onsubmit="return getHTML()"
-                                action="@routes.RAJobController.rajobApplicationStatusChange(rajobApplication.getId, "pending")">
+                        @if(rajobApplication.getAppliedRAJob != null) {
+                            <form class="form-signin"
+                                    id="editTechnologyForm"
+                                    method="post"
+                                    onsubmit="return getHTML()"
+                                    action="@routes.RAJobController.rajobApplicationStatusChange(rajobApplication.getId, "pending")">
 
-                             @if(userTypes == "1" && rajobApplication.getAppliedRAJob.getStatus() !="closed" ) {
-                                 <a class="waves-effect waves-light btn modal-trigger blue darken-2"
-                                 href="#ccModal">Select CC Recipients</a>
-                                 <input type="hidden" name="ccSelected" id="ccSelectedHidden" value="" />
-                                 <div class="input-field" style="margin-top: 1rem;">
-                                     <label class="active" for="interviewSlot1">Interview Slot 1</label>
-                                     <input id="interviewSlot1" name="interviewSlot1" type="datetime-local" value="@StringUtils.defaultString(rajobApplication.getInterviewSlot1())">
-                                 </div>
-                                 <div class="input-field">
-                                     <label class="active" for="interviewSlot2">Interview Slot 2</label>
-                                     <input id="interviewSlot2" name="interviewSlot2" type="datetime-local" value="@StringUtils.defaultString(rajobApplication.getInterviewSlot2())">
-                                 </div>
-                                 <div class="input-field">
-                                     <label class="active" for="interviewSlot3">Interview Slot 3</label>
-                                     <input id="interviewSlot3" name="interviewSlot3" type="datetime-local" value="@StringUtils.defaultString(rajobApplication.getInterviewSlot3())">
-                                 </div>
-                                 <p style="margin-top: 16px;">
-                                    <label>
-                                        <input type="checkbox" name="sendNotif" value="true" checked="checked" />
-                                        <span>Send notification to applicant</span>
-                                    </label>
-                                </p>
-                             }
+                                 @if(userTypes == "1" && rajobApplication.getAppliedRAJob.getStatus() !="closed" ) {
+                                     <a class="waves-effect waves-light btn modal-trigger blue darken-2"
+                                     href="#ccModal">Select CC Recipients</a>
+                                     <input type="hidden" name="ccSelected" id="ccSelectedHidden" value="" />
+                                     <div class="input-field" style="margin-top: 1rem;">
+                                         <label class="active" for="interviewSlot1">Interview Slot 1</label>
+                                         <input id="interviewSlot1" name="interviewSlot1" type="datetime-local" value="@StringUtils.defaultString(rajobApplication.getInterviewSlot1())">
+                                     </div>
+                                     <div class="input-field">
+                                         <label class="active" for="interviewSlot2">Interview Slot 2</label>
+                                         <input id="interviewSlot2" name="interviewSlot2" type="datetime-local" value="@StringUtils.defaultString(rajobApplication.getInterviewSlot2())">
+                                     </div>
+                                     <div class="input-field">
+                                         <label class="active" for="interviewSlot3">Interview Slot 3</label>
+                                         <input id="interviewSlot3" name="interviewSlot3" type="datetime-local" value="@StringUtils.defaultString(rajobApplication.getInterviewSlot3())">
+                                     </div>
+                                     <p style="margin-top: 16px;">
+                                        <label>
+                                            <input type="checkbox" name="sendNotif" value="true" checked="checked" />
+                                            <span>Send notification to applicant</span>
+                                        </label>
+                                    </p>
+                                 }
 
 
-                            @if(userTypes == "1" && rajobApplication.getAppliedRAJob.getStatus() !="closed" ) {
-                                <button type="submit" id="RajobOffer" class="btn waves-effect waves-light blue darken-2">
-                                    Offer</button>
-                            }
-@*                            <a href="@routes.JobController.jobApplicationsList("rajob", rajobApplication.getAppliedRAJob.getId(), 1, "")" class="btn waves-effect waves-light red darken-2">*@
-@*                                Reject</a>*@
-                            @if(userTypes == "1"){
-                                <a href="@routes.JobController.jobApplicationsList("rajob", rajobApplication.getAppliedRAJob.getId(), 1, "")" class="btn waves-effect waves-light green darken-2">
-                                Cancel</a>
-                            }
+                                @if(userTypes == "1" && rajobApplication.getAppliedRAJob.getStatus() !="closed" ) {
+                                    <button type="submit" id="RajobOffer" class="btn waves-effect waves-light blue darken-2">
+                                        Offer
+                                    </button>
+                                }
+                                @if(userTypes == "1"){
+                                    <a href="@routes.JobController.jobApplicationsList("rajob", rajobApplication.getAppliedRAJob.getId(), 1, "")" class="btn waves-effect waves-light green darken-2">
+                                        Cancel
+                                    </a>
+                                }
+                                @if(userTypes == "4") {
+                                    <a href="@routes.RAJobController.rajobListAppliedByUser(1)" class="btn waves-effect waves-light blue darken-2">
+                                        Back to Applied RA Job List
+                                    </a>
+                                }
+                            </form>
+                        } else {
                             @if(userTypes == "4") {
                                 <a href="@routes.RAJobController.rajobListAppliedByUser(1)" class="btn waves-effect waves-light blue darken-2">
-                                Back to Applied RA Job List</a>
+                                    Back to Applied RA Job List
+                                </a>
+                            } else {
+                                <a href="@routes.RAJobController.rajobList(1, "id")" class="btn waves-effect waves-light blue darken-2">
+                                    Back to RA Job List
+                                </a>
                             }
-                        </form>
+                        }
                     </div>
                 </div>
             </div>

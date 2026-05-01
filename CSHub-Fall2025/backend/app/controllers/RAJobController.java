@@ -66,7 +66,13 @@ public class RAJobController extends Controller {
             }
 
             RAJob rajob = Json.fromJson(json, RAJob.class);
-            System.out.println("<<<<,,1.1 rajob to create:" + rajob.toString());
+            User publisher = resolveRAJobPublisher(json, rajob);
+            if (publisher == null) {
+                Logger.warn("RA job not saved: invalid publisher payload {}", json.path("rajobPublisher"));
+                return Common.badRequestWrapper("RA job not saved: invalid publisher.");
+            }
+            rajob.setRajobPublisher(publisher);
+
             rajob.setIsActive("True");
             rajob.setStatus("open");
             rajob.setCreateTime(new Date().toString());
@@ -79,8 +85,8 @@ public class RAJobController extends Controller {
 
             return ok(Json.toJson(rajob.getId()).toString());
         } catch (Exception e) {
-            Logger.debug("RA job cannot be added: " + e.toString());
-            return badRequest("RA job not saved: ");
+            Logger.error("RA job cannot be added", e);
+            return Common.badRequestWrapper("RA job not saved: " + e.getMessage());
         }
     }
     /************************************************* End of Add RAJob ************************************************/
@@ -455,7 +461,7 @@ public class RAJobController extends Controller {
 
         try {
             RAJobApplication rajobApplication = RAJobApplication.find.query().where().eq("id", rajobApplicationId).findOne();
-            return ok(buildRAJobApplicationResponse(rajobApplication));
+            return ok(Json.toJson(rajobApplication));
         } catch (Exception e) {
             Logger.debug("RAJobController.getRAJobApplicationById() exception : " + e.toString());
             return internalServerError("Internal Server Error JobController.getRAJobApplicationById() exception: " +
@@ -1216,5 +1222,80 @@ public class RAJobController extends Controller {
         response.put("interviewSlot2", rajobApplication.getInterviewSlot2());
         response.put("interviewSlot3", rajobApplication.getInterviewSlot3());
         return response;
+    }
+
+    private User resolveRAJobPublisher(JsonNode json, RAJob rajob) {
+        if (rajob != null && rajob.getRajobPublisher() != null && rajob.getRajobPublisher().getId() > 0) {
+            User existingUser = User.find.byId(rajob.getRajobPublisher().getId());
+            if (existingUser != null) {
+                return existingUser;
+            }
+        }
+
+        JsonNode publisherJson = json.path("rajobPublisher");
+        if (publisherJson == null || publisherJson.isMissingNode()) {
+            return null;
+        }
+
+        long publisherId = publisherJson.path("id").asLong(0L);
+        if (publisherId > 0) {
+            User existingUser = User.find.byId(publisherId);
+            if (existingUser != null) {
+                return existingUser;
+            }
+        }
+
+        String publisherEmail = publisherJson.path("email").asText("");
+        if (publisherEmail != null && !publisherEmail.trim().isEmpty()) {
+            User existingByEmail = User.find.query().where().eq("email", publisherEmail.trim()).findOne();
+            if (existingByEmail != null) {
+                return existingByEmail;
+            }
+        }
+
+        return createPlaceholderPublisher(publisherId, publisherEmail);
+    }
+
+    private User createPlaceholderPublisher(long requestedId, String requestedEmail) {
+        String email = requestedEmail == null ? "" : requestedEmail.trim();
+        if (email.isEmpty()) {
+            email = "faculty-" + (requestedId > 0 ? requestedId : System.currentTimeMillis()) + "@local.invalid";
+        }
+
+        try {
+            User placeholder = new User();
+            if (requestedId > 0) {
+                placeholder.setId(requestedId);
+            }
+
+            placeholder.setEmail(email);
+            placeholder.setUserName(email.contains("@") ? email.substring(0, email.indexOf('@')) : email);
+            placeholder.setPassword("");
+            placeholder.setFirstName("Faculty");
+            placeholder.setLastName("User");
+            placeholder.setLevel("normal");
+            placeholder.setIsActive("True");
+            placeholder.setCreateTime(new Date().toString());
+            placeholder.save();
+            return placeholder;
+        } catch (Exception ex) {
+            Logger.warn("Failed to create placeholder publisher with requested id, retrying with generated id. {}", ex.toString());
+            try {
+                User placeholder = new User();
+                placeholder.setEmail(email);
+                placeholder.setUserName(email.contains("@") ? email.substring(0, email.indexOf('@')) : email);
+                placeholder.setPassword("");
+                placeholder.setFirstName("Faculty");
+                placeholder.setLastName("User");
+                placeholder.setLevel("normal");
+                placeholder.setIsActive("True");
+                placeholder.setCreateTime(new Date().toString());
+                placeholder.save();
+                return placeholder;
+            } catch (Exception retryEx) {
+                Logger.error("Failed to create placeholder publisher for RA job", retryEx);
+                return null;
+            }
+        }
     }
 }

@@ -167,14 +167,14 @@
                                 back to job management
                             </a>
                         }
-                        @if((userTypes == "1" && job.getJobPublisher().getId().equals(userId)) || userTypes == "0") {
+                        @if((userTypes == "1" && job.getJobPublisher() != null && job.getJobPublisher().getId().equals(userId)) || userTypes == "0") {
                             <a href="@routes.JobController.jobEditPage(job.getId)" class="btn waves-effect waves-light blue darken-2">
                                 Edit Job Info
                             </a>
                         }
                         <a href="@routes.JobController.jobList(1, "id")" class="btn waves-effect waves-light blue darken-2">
                             Back to Job List</a>
-                        @if(userTypes == "4" || ( userTypes == "1" && !job.getjobApplicationIdList.contains(userId) && !job.getJobPublisher().getId().equals(userId)) || userTypes == "0") {
+                        @if(userTypes == "4" || ( userTypes == "1" && !job.getjobApplicationIdList.contains(userId) && (job.getJobPublisher() == null || !job.getJobPublisher().getId().equals(userId))) || userTypes == "0") {
                             <a href="@routes.JobController.jobApplyPage(job.getId)" class="btn waves-effect waves-light green darken-2">
                                 Apply Job
                             </a>

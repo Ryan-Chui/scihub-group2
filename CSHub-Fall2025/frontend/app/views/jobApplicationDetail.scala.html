@@ -25,12 +25,16 @@
                                 <tr>
                                     <tr>
                                         <th style="max-width: 50px">Job Name</th>
-                                        <td style="word-wrap: break-word;">@jobApplication.getAppliedJob.getTitle</td>
+                                        @if(jobApplication.getAppliedJob != null && jobApplication.getAppliedJob.getTitle != null && jobApplication.getAppliedJob.getTitle != "") {
+                                            <td style="word-wrap: break-word;">@jobApplication.getAppliedJob.getTitle</td>
+                                        } else {
+                                            <td>-</td>
+                                        }
                                     </tr>
 
                                     <tr>
                                         <th style="max-width: 50px">Applicant Name</th>
-                                        @if(jobApplication.getApplicant!="null" && jobApplication.getApplicant != "") {
+                                        @if(jobApplication.getApplicant != null && jobApplication.getApplicant.getUserName != null && jobApplication.getApplicant.getUserName != "") {
                                             <td style="word-wrap: break-word;">@jobApplication.getApplicant.getUserName</td>
                                         } else {
                                             <td>-</td>
@@ -194,23 +198,29 @@
                     </div>
                     <div class="row center">
 
-                        <form class="form-signin" enctype="multipart/form-data" id="editTechnologyForm" method="post" onsubmit="return getHTML()" action="@routes.JobController.jobStatueChange(jobApplication.getAppliedJob.getId, "pending")">
-                            @if(userId.toLong == jobApplication.getJobPublisher.getId()) {
-                                <button type="submit" id="technologyRegister" class="btn waves-effect waves-light blue darken-2">
-                                    Offer</button>
-                            }
-@*                            <a href="@routes.JobController.jobApplicationsList("job", jobApplication.getAppliedJob.getId, 1, "id")" class="btn waves-effect waves-light red darken-2">*@
-@*                                Reject</a>*@
-                            @if(userId.toLong == jobApplication.getJobPublisher.getId()) {
-                            <a href="@routes.JobController.jobApplicationsList("job", jobApplication.getAppliedJob.getId, 1, "id")" class="btn waves-effect waves-light green darken-2">
-                                Cancel</a>
-                            }
-                            @if(userId.toLong != jobApplication.getJobPublisher.getId()) {
-                                <a href="@routes.JobController.jobListAppliedByUser(1)" class="btn waves-effect waves-light blue darken-2">
-                                    Back to Applied Job List</a>
-                            }
-
-                        </form>
+                        @if(jobApplication.getAppliedJob != null) {
+                            <form class="form-signin" enctype="multipart/form-data" id="editTechnologyForm" method="post" onsubmit="return getHTML()" action="@routes.JobController.jobStatueChange(jobApplication.getAppliedJob.getId, "pending")">
+                                @if(userId != null && jobApplication.getJobPublisher != null && userId.toLong == jobApplication.getJobPublisher.getId()) {
+                                    <button type="submit" id="technologyRegister" class="btn waves-effect waves-light blue darken-2">
+                                        Offer
+                                    </button>
+                                }
+                                @if(userId != null && jobApplication.getJobPublisher != null && userId.toLong == jobApplication.getJobPublisher.getId()) {
+                                    <a href="@routes.JobController.jobApplicationsList("job", jobApplication.getAppliedJob.getId, 1, "id")" class="btn waves-effect waves-light green darken-2">
+                                        Cancel
+                                    </a>
+                                }
+                                @if(jobApplication.getJobPublisher == null || userId == null || userId.toLong != jobApplication.getJobPublisher.getId()) {
+                                    <a href="@routes.JobController.jobListAppliedByUser(1)" class="btn waves-effect waves-light blue darken-2">
+                                        Back to Applied Job List
+                                    </a>
+                                }
+                            </form>
+                        } else {
+                            <a href="@routes.JobController.jobList(1, "id")" class="btn waves-effect waves-light blue darken-2">
+                                Back to Job List
+                            </a>
+                        }
                     </div>
                 </div>
             </div>

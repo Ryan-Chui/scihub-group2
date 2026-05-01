@@ -19,18 +19,15 @@ import utils.Constants;
 import utils.RESTfulCalls;
 import utils.RESTfulCalls.ResponseType;
 import views.html.*;
-import utils.S3Utils;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.net.URL;
-import java.util.Base64;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
 public class Application extends Controller {
     public static final String PRIVATE_PROJECT_ZONE = "-1";
-    private static final String AWS_FILE_NAME_PREFIX = Constants.AWS_FILE_NAME_PREFIX;
+    private static final String DEFAULT_AVATAR_ASSET = "images/user.png";
 
     private final ProjectService projectService;
 
@@ -359,49 +356,40 @@ public class Application extends Controller {
     }
 
     public Result getImageFromPath(String path){
-        // checkLoginStatus();
-        try{
-            Logger.info("Path: " + path);
-            Logger.info("Original input path: " + path);
-            URL url = new URL(path);
-            Logger.info("url: " + url);
-            String bucketName = url.getHost().split("\\.")[0];
-//            Logger.info(bucketName);
-            String key = url.getPath();
-            Logger.info("Extracted S3 Key: " + key);
-            if (key.startsWith("/")) {
-                key = key.substring(1);
+        try {
+            if (path == null || path.trim().isEmpty()) {
+                return redirect(routes.Assets.at(DEFAULT_AVATAR_ASSET));
+            }
+            String normalizedPath = path.trim();
+
+            // Avoid server-side S3 dependency. For S3 URLs, serve local fallback.
+            if (normalizedPath.startsWith("http://") || normalizedPath.startsWith("https://")) {
+                if (normalizedPath.contains(".s3.amazonaws.com")) {
+                    return redirect(routes.Assets.at(DEFAULT_AVATAR_ASSET));
+                }
+                return redirect(normalizedPath);
             }
 
-            Logger.info("Extracted Bucket Name: " + bucketName);
-            Logger.info("Extracted S3 Key: " + key);
-
-            String base64EncodedData = S3Utils.getObject(bucketName,key);
-
-            if (base64EncodedData == null || base64EncodedData.isEmpty()) {
-                Logger.error("S3Utils.getObject() returned null or empty data.");
-                return notFound("Image not found in S3");
+            int assetsIndex = normalizedPath.indexOf("assets/");
+            if (assetsIndex >= 0) {
+                String assetPath = normalizedPath.substring(assetsIndex + "assets/".length());
+                return redirect(routes.Assets.at(assetPath));
             }
 
-            byte[] imageData = Base64.getDecoder().decode(base64EncodedData);
+            if (normalizedPath.startsWith("/assets/")) {
+                String assetPath = normalizedPath.substring("/assets/".length());
+                return redirect(routes.Assets.at(assetPath));
+            }
 
-            return ok(imageData).as("image/jpeg");
-        }
-        catch(Exception e){
-            return ok(generalError.render());
+            return redirect(routes.Assets.at(DEFAULT_AVATAR_ASSET));
+        } catch (Exception e) {
+            Logger.warn("getImageFromPath fallback due to invalid path: {}", path);
+            return redirect(routes.Assets.at(DEFAULT_AVATAR_ASSET));
         }
     }
 
     public Result getDefaultAvatar(){
-        try{
-            String base64EncodedData = S3Utils.getObject("user.png", "https://ecopro-aws-bucket.s3.amazonaws.com/" + AWS_FILE_NAME_PREFIX + "/user/user.png");
-            byte[] imageData = Base64.getDecoder().decode(base64EncodedData);
-
-            return ok(imageData).as("image/jpeg");
-        }
-        catch(Exception e){
-            return ok(generalError.render());
-        }
+        return redirect(routes.Assets.at(DEFAULT_AVATAR_ASSET));
     }
 
     /**

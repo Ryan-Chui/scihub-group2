@@ -194,6 +194,7 @@
                                     <th style="cursor: pointer;">Fields</th>
                                     <th style="cursor: pointer;">Status</th>
                                     <th style="cursor: pointer;">updateTime</th>
+                                    <th style="cursor: pointer;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -288,6 +289,11 @@
                                     } else {
                                         <td><span class="@entry.getId() editable" data-name='updateTime'> -</span></td>
                                     }
+                                    <td>
+                                        <a href="@routes.JobController.jobDetail(entry.getId())" class="btn waves-effect waves-light blue darken-2">
+                                            View Details
+                                        </a>
+                                    </td>
                                 </tr>
                             }
                             </tbody>
@@ -339,6 +345,12 @@
                                 } else {
                                     <span> -</span>
                                 }
+                            </div>
+
+                            <div style="margin-top: 12px;">
+                                <a href="@routes.JobController.jobDetail(entry.getId())" class="btn waves-effect waves-light blue darken-2">
+                                    View Details
+                                </a>
                             </div>
 
                         </div>

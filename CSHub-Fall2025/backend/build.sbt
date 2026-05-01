@@ -28,8 +28,7 @@ libraryDependencies ++= Seq(
 )
 
 
-libraryDependencies += "com.mysql" % "mysql-connector-j" % "8.4.0"
-libraryDependencies += "com.h2database" % "h2" % "2.2.224" % Test
+libraryDependencies += "com.h2database" % "h2" % "2.2.224"
 libraryDependencies ++= Seq(
   "com.google.code.gson" % "gson" % "2.6.2",
   "org.projectlombok" % "lombok" % "1.18.34",

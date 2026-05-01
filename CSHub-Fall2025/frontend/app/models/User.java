@@ -23,7 +23,7 @@ import java.util.Set;
         "createdProjects"})
 public class User {
     private static final String AWS_FILE_NAME_PREFIX = Constants.AWS_FILE_NAME_PREFIX;
-    public static final String DEFAULT_USER_IMAGE = "https://ecopro-aws-bucket.s3.amazonaws.com/" + AWS_FILE_NAME_PREFIX + "/user/user.png";
+    public static final String DEFAULT_USER_IMAGE = "/assets/images/user.png";
     protected long id;
 
     protected String userName;
@@ -522,4 +522,3 @@ public class User {
         this.sponsoredProjects = sponsoredProjects;
     }
 }
-

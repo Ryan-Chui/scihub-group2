@@ -1,6 +1,7 @@
 package services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.Config;
 import controllers.routes;
 import models.RAJob;
@@ -163,20 +164,52 @@ public class RAJobService {
      * @throws Exception
      */
     public JsonNode serializeFormToJson(Form<RAJob> rajobForm) throws Exception {
-        JsonNode jsonData = null;
         try {
             RAJob rajob = rajobForm.get();
-            String longDescription = rajob.getLongDescription();
-            if (longDescription != null) {
-                longDescription.replaceAll(
-                        "\n", "").replaceAll("\r", "");
+            ObjectNode jsonData = Json.newObject();
+
+            jsonData.put("title", rajob.getTitle() == null ? "" : rajob.getTitle());
+            jsonData.put("goals", rajob.getGoals() == null ? "" : rajob.getGoals());
+            jsonData.put("minSalary", rajob.getMinSalary());
+            jsonData.put("maxSalary", rajob.getMaxSalary());
+            jsonData.put("raTypes", rajob.getRaTypes());
+            jsonData.put("shortDescription", rajob.getShortDescription() == null ? "" : rajob.getShortDescription());
+            jsonData.put("longDescription", rajob.getLongDescription() == null ? "" :
+                    rajob.getLongDescription().replace("\n", "").replace("\r", ""));
+            jsonData.put("fields", rajob.getFields() == null ? "" : rajob.getFields());
+            jsonData.put("publishDate", rajob.getPublishDate() == null ? "" : rajob.getPublishDate());
+            jsonData.put("publishYear", rajob.getPublishYear() == null ? "" : rajob.getPublishYear());
+            jsonData.put("publishMonth", rajob.getPublishMonth() == null ? "" : rajob.getPublishMonth());
+            jsonData.put("imageURL", rajob.getImageURL() == null ? "" : rajob.getImageURL());
+            jsonData.put("url", rajob.getUrl() == null ? "" : rajob.getUrl());
+            jsonData.put("organization", rajob.getOrganization() == null ? "" : rajob.getOrganization());
+            jsonData.put("location", rajob.getLocation() == null ? "" : rajob.getLocation());
+            jsonData.put("requiredExpertise", rajob.getRequiredExpertise() == null ? "" : rajob.getRequiredExpertise());
+            jsonData.put("preferredExpertise", rajob.getPreferredExpertise() == null ? "" : rajob.getPreferredExpertise());
+            jsonData.put("numberOfPositions", rajob.getNumberOfPositions() == null ? "" : rajob.getNumberOfPositions());
+            jsonData.put("expectedStartDate", rajob.getExpectedStartDate() == null ? "" : rajob.getExpectedStartDate());
+            jsonData.put("numberOfApplicants", rajob.getNumberOfApplicants());
+
+            User publisher = rajob.getRajobPublisher();
+            long publisherId = publisher != null ? publisher.getId() : 0L;
+            String publisherEmail = publisher != null ? publisher.getEmail() : null;
+            if (session("id") != null && !session("id").isEmpty()) {
+                publisherId = Long.parseLong(session("id"));
+            }
+            if (session("email") != null && !session("email").trim().isEmpty()) {
+                publisherEmail = session("email");
             }
 
-            if (rajob.getRajobPublisher() == null) {
-                User user = new User(Long.parseLong(session("id")));
-                rajob.setRajobPublisher(user);
+            ObjectNode publisherNode = Json.newObject();
+            if (publisherId > 0) {
+                publisherNode.put("id", publisherId);
             }
-            return Json.toJson(rajob);
+            if (publisherEmail != null && !publisherEmail.trim().isEmpty()) {
+                publisherNode.put("email", publisherEmail.trim());
+            }
+            jsonData.set("rajobPublisher", publisherNode);
+
+            return jsonData;
         } catch (Exception e) {
             Logger.debug("RAJobService.serializeFormToJson exception: " + e.toString());
             throw e;
