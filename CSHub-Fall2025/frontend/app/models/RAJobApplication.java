@@ -98,9 +98,6 @@ public class RAJobApplication {
 
     // rajob application status
     private String status;
-    private String interviewSlot1;
-    private String interviewSlot2;
-    private String interviewSlot3;
 
 
     /*********************************************** Constructors *****************************************************/
@@ -499,29 +496,5 @@ public class RAJobApplication {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getInterviewSlot1() {
-        return interviewSlot1;
-    }
-
-    public void setInterviewSlot1(String interviewSlot1) {
-        this.interviewSlot1 = interviewSlot1;
-    }
-
-    public String getInterviewSlot2() {
-        return interviewSlot2;
-    }
-
-    public void setInterviewSlot2(String interviewSlot2) {
-        this.interviewSlot2 = interviewSlot2;
-    }
-
-    public String getInterviewSlot3() {
-        return interviewSlot3;
-    }
-
-    public void setInterviewSlot3(String interviewSlot3) {
-        this.interviewSlot3 = interviewSlot3;
     }
 }

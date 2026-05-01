@@ -57,9 +57,7 @@ public class DBLPSearchQuery implements DBLPQuery {
     @Override
     public String getAssembledQuery() {
         final URIBuilder uri = new URIBuilder();
-        uri.setScheme("http");
-        uri.setHost("dblp.org");
-        uri.setPath(endpoint.getExtension());
+        uri.setPath("http://dblp.org" + endpoint.getExtension());
         uri.addParameter("format", format.getFormatText());
         uri.addParameter("h", "" + maxResults);
         uri.addParameter("f", "" + minRecordNumber);

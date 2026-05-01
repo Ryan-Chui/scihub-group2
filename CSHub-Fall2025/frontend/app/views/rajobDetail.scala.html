@@ -191,14 +191,10 @@
                                 Apply Job
                             </a>
                         }
-                         @if((userTypes == "1" && rajob.getRajobPublisher().getId().equals(userId)) || userTypes == "0" ) {
-                             <a href="@routes.JobController.jobApplicationsList("rajob", rajob.getId(), 1, "id")" class="btn waves-effect waves-light green darken-2">
-                                 View Applicants</a>
-                         }
-                         @if((userTypes == "1" && rajob.getRajobPublisher().getId().equals(userId)) || userTypes == "0" ) {
-                             <a href="@routes.RAJobController.closeRAJob(rajob.getId)" class="btn waves-effect waves-light blue darken-2">
-                                 Close RA Job</a>
-                         }
+                        @if((userTypes == "1" && rajob.getRajobPublisher().getId().equals(userId)) || userTypes == "0" ) {
+                            <a href="@routes.RAJobController.closeRAJob(rajob.getId)" class="btn waves-effect waves-light blue darken-2">
+                                Close RA Job</a>
+                        }
 
                     </div>
                 </div>

@@ -1,0 +1,12 @@
+2026-04-30 21:37:58.531000-05:00 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "play_evolutions" not found (this database is empty); SQL statement:
+select id, hash, apply_script, revert_script, state, last_problem from play_evolutions where state like 'applying_%' [42104-224]
+2026-04-30 21:59:59.390000-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "content CHARACTER VARYING(255)": "U&'Dear Applicant,\\000a\\000aYour application for Position a has been reviewed an... (541)"; SQL statement:
+insert into mail (title, content, timestamp, sender_id, receiver_id) values (?,?,?,?,?) [22001-224]
+2026-04-30 22:09:23.515000-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "content CHARACTER VARYING(255)": "U&'Dear Applicant,\\000a\\000aYour application for Position a has been reviewed an... (541)"; SQL statement:
+insert into mail (title, content, timestamp, sender_id, receiver_id) values (?,?,?,?,?) [22001-224]
+2026-04-30 22:10:14.833000-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "content CHARACTER VARYING(255)": "U&'Dear Applicant,\\000a\\000aYour application for Position a has been reviewed an... (541)"; SQL statement:
+insert into mail (title, content, timestamp, sender_id, receiver_id) values (?,?,?,?,?) [22001-224]

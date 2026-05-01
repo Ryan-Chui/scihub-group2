@@ -22,15 +22,6 @@ run
 
 This will start the frontend and backend on their respective ports. You can access the landing page by navigating to `http://localhost:9038`.
 
-## Faculty RA applicant review and interview slots
-
-Faculty can now review RA applicants directly from an RA job and propose up to 3 interview slots when sending an offer.
-
-1. Open an RA job detail page and click **View Applicants**.
-2. Open an applicant via **View Details**.
-3. Click **Offer**, set optional **Interview Slot 1-3**, and submit.
-4. The slots are saved on the RA application detail and included in the offer email.
-
 ## Contribution Guidelines
 For contributors, please follow these guidelines when making changes to the code:
 

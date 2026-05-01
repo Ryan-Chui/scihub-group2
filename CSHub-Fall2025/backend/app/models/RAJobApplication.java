@@ -76,9 +76,6 @@ public class RAJobApplication extends Model{
     private String createdTime;
     private String isActive;
     private String status;
-    private String interviewSlot1;
-    private String interviewSlot2;
-    private String interviewSlot3;
 
 
 

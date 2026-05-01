@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.Config;
 import models.Job;
 import models.JobApplication;
+import models.Mail;
 import models.RAJob;
 import models.RAJobApplication;
 import play.Logger;
@@ -39,7 +40,7 @@ import static utils.Common.endIndexForPagination;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class RAJobController extends Controller {
+public class MailController extends Controller {
 
     @Inject
     Config config;
@@ -59,11 +60,11 @@ public class RAJobController extends Controller {
 
     /******************************* Constructor **********************************************************************/
     @Inject
-    public RAJobController(FormFactory factory,
-                           RAJobService rajobService,
-                           UserService userService,
-                           RAJobApplicationService rajobApplicationService,
-                           AccessTimesService accessTimesService,
+    public MailController(FormFactory factory,
+                            RAJobService rajobService,
+                            UserService userService,
+                            RAJobApplicationService rajobApplicationService,
+                            AccessTimesService accessTimesService,
                            FileService fileService) {
         rajobFormTemplate = factory.form(RAJob.class);
         myFactory = factory;
@@ -74,6 +75,25 @@ public class RAJobController extends Controller {
         this.userService = userService;
         this.accessTimesService = accessTimesService;
         this.fileService = fileService;
+    }
+
+    public Result notificationsPage() {
+        checkLoginStatus();
+        List<Mail> notificationsList = new ArrayList<>();
+        try {
+            String userId = session("id");
+            JsonNode response = RESTfulCalls.getAPI(
+                    RESTfulCalls.getBackendAPIUrl(config, "/mail/received/" + userId)
+            );
+            if (response != null && !response.has("error") && response.isArray()) {
+                notificationsList = Mail.deserializeJsonToMailList(response);
+            } else {
+                Logger.warn("notificationsPage: backend returned invalid response for user {}", userId);
+            }
+        } catch (Exception e) {
+            Logger.warn("notificationsPage: failed to load notifications. {}", e.toString());
+        }
+        return ok(views.html.notifications.render(notificationsList));
     }
 
 
@@ -683,6 +703,8 @@ public class RAJobController extends Controller {
 
             String[] ccArr = formUrlEncoded.get("ccSelected");
             Logger.debug("Raw ccSelected from form: " + Arrays.toString(ccArr));
+            boolean sendNotif = formUrlEncoded.containsKey("sendNotif");
+            Logger.debug("sendNotif flag from form: " + sendNotif);
 
             String ccString = "";
             if (ccArr != null && ccArr.length > 0 && ccArr[0] != null && !ccArr[0].isEmpty()) {
@@ -696,11 +718,14 @@ public class RAJobController extends Controller {
             }
             Logger.debug("Computed ccString to pass: " + ccString);
 
-            Logger.debug("▶ Calling sendOfferEmail...");
-            Result emailResult = sendOfferEmail(rajobApplicationId, ccString);
-            Logger.debug("sendOfferEmail result: " + emailResult.toString());
+            if (sendNotif) {
+                Logger.debug("▶ Calling sendOfferEmail...");
+                Result emailResult = sendOfferEmail(rajobApplicationId, ccString);
+                Logger.debug("sendOfferEmail result: " + emailResult.toString());
+                return emailResult;
+            }
 
-            return emailResult;
+            return ok(editConfirmation.render(rajobApplicationId, 0L, "RajobOffer"));
 
         } catch (Exception e) {
             Logger.error("❌ Exception caught in rajobApplicationStatusChange", e);
@@ -909,7 +934,7 @@ public class RAJobController extends Controller {
             );
             Logger.debug("sendOfferEmail response = " + offerResp);
 
-            return ok(editConfirmation.render(rajobApplicationId, 0L, "SendOffer"));
+            return ok(editConfirmation.render(rajobApplicationId, 0L, "RajobOfferNotified"));
 
         } catch (Exception e) {
             Logger.error("sendOfferEmail failed: ", e);
