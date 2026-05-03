@@ -27,6 +27,7 @@ public class Mail extends Model {
     private String title;
 
     
+    @Column(length = 4000)
     private String content;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy hh:mm:ss")

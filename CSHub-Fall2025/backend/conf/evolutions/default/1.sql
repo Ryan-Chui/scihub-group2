@@ -207,7 +207,7 @@ create table job_application (
 create table mail (
   id                            bigint auto_increment not null,
   title                         varchar(255),
-  content                       varchar(255),
+  content                       varchar(4000),
   timestamp                     timestamp,
   sender_id                     bigint,
   receiver_id                   bigint,

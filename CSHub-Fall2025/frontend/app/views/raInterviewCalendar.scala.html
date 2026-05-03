@@ -49,6 +49,7 @@
                                     <td>@interview.path("status").asText("-")</td>
                                     <td>
                                         <form method="post" action="@routes.RAJobController.rescheduleInterview(interview.path("applicationId").asLong())">
+                                            @CSRF.formField
                                             <div class="input-field">
                                                 <input name="interviewTime" type="datetime-local" value="@interviewTime" required>
                                             </div>
@@ -61,6 +62,7 @@
                                     </td>
                                     <td>
                                         <form method="post" action="@routes.RAJobController.cancelInterview(interview.path("applicationId").asLong())">
+                                            @CSRF.formField
                                             <div class="input-field">
                                                 <input name="note" type="text">
                                                 <label>Optional reason</label>

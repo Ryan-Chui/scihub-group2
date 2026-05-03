@@ -229,6 +229,7 @@
                                     method="post"
                                     onsubmit="return getHTML()"
                                     action="@routes.RAJobController.rajobApplicationStatusChange(rajobApplication.getId, "pending")">
+                                @CSRF.formField
 
                                  @if(userTypes == "1" && rajobApplication.getAppliedRAJob.getStatus() !="closed" ) {
                                      <a class="waves-effect waves-light btn modal-trigger blue darken-2"

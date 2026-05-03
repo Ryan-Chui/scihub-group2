@@ -80,7 +80,9 @@ public class JobController extends Controller {
      */
     @With(OperationLoggingAction.class)
     public Result jobRegisterPage() {
-        checkLoginStatus();
+        if (session("id") == null || session("username") == null) {
+            return redirect(routes.Application.login());
+        }
         return ok(jobRegister.render());
     }
 
@@ -90,7 +92,9 @@ public class JobController extends Controller {
      * @return
      */
     public Result jobRegisterPOST() {
-        checkLoginStatus();
+        if (session("id") == null || session("username") == null) {
+            return redirect(routes.Application.login());
+        }
         try {
             Form<Job> jobForm = jobFormTemplate.bindFromRequest();
             Http.MultipartFormData body = request().body().asMultipartFormData();

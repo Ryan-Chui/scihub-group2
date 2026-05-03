@@ -86,7 +86,9 @@ public class RAJobController extends Controller {
      */
     @With(OperationLoggingAction.class)
     public Result rajobRegisterPage() {
-        checkLoginStatus();
+        if (session("id") == null || session("username") == null) {
+            return redirect(routes.Application.login());
+        }
         String userTypes = session("userTypes");
         String userId    = session("id");
         String userEmail  = session("email");
@@ -115,7 +117,9 @@ public class RAJobController extends Controller {
      * @return
      */
     public Result rajobRegisterPOST() {
-        checkLoginStatus();
+        if (session("id") == null || session("username") == null) {
+            return redirect(routes.Application.login());
+        }
         Logger.debug("▶ Entering RAJobController.rajobRegisterPOST");
         try {
             Form<RAJob> rajobForm = rajobFormTemplate.bindFromRequest();
@@ -603,6 +607,9 @@ public class RAJobController extends Controller {
     @With(OperationLoggingAction.class)
     public Result rajobApplyPage(Long rajobId) {
         try {
+            if (session("id") == null || session("username") == null) {
+                return redirect(routes.Application.login());
+            }
             String userTypes = session("userTypes");
             if (userTypes == null) {
                 return unauthorized("Unknown role or not authorized.");
@@ -635,7 +642,9 @@ public class RAJobController extends Controller {
      * @return
      */
     public Result rajobApplyPOST(Long rajobId) {
-        checkLoginStatus();
+        if (session("id") == null || session("username") == null) {
+            return redirect(routes.Application.login());
+        }
 
         try {
             // 1) bind form and parse multipart body
@@ -717,7 +726,9 @@ public class RAJobController extends Controller {
      * @return
      */
     public Result rajobApplicationStatusChange(Long rajobApplicationId, String rajobApplicationStatus) {
-        checkLoginStatus();
+        if (session("id") == null || session("username") == null) {
+            return redirect(routes.Application.login());
+        }
         String userId = session("id");
         String sessionEmail = session("email");
         Logger.debug("▶ Entering rajobApplicationStatusChange");

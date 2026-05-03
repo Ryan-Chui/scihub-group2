@@ -249,6 +249,7 @@
                     <!-- <h6 class="left form-signin-heading" align="center">
                         Or you could fill in the following information in-person:</h6> -->
                     <form class="form-signin" enctype="multipart/form-data" id="jobForm" onsubmit="return prepareFormForSubmission()" method="post" action="@routes.JobController.jobRegisterPOST()">
+                        @CSRF.formField
                         @*
                         <div class="row">
                             <div class="file-field input-field col s12">

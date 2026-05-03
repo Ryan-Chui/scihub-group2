@@ -389,6 +389,7 @@
                         </div>
                     </div>
                     <form class="form-signin" enctype="multipart/form-data" id="editProjectForm" method="post" onsubmit="return getHTML()" action="@routes.RAJobController.rajobApplyPOST(rajob.getId)">
+                        @CSRF.formField
                         <div id="hiddenDiv" style="display: none;">
                             <input name="isActive" id="isActive" class="validate" value="@rajob.getIsActive">
                         </div>
