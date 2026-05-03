@@ -109,7 +109,17 @@ public class UserController extends Controller {
         String researchFields = json.path("researchFields").asText();
         String highestDegree = json.path("highestDegree").asText();
 
-        Integer userType = Integer.parseInt(json.path("hiddenUserType").asText());
+        String hiddenUserType = json.path("hiddenUserType").asText();
+        if (hiddenUserType == null || hiddenUserType.trim().equals("")) {
+            hiddenUserType = json.path("userTypes").asText();
+        }
+        if (hiddenUserType == null || hiddenUserType.trim().equals("") || hiddenUserType.trim().equals("0")) {
+            return Common.badRequestWrapper("Please select a user type.");
+        }
+        if (organization == null || organization.trim().equals("")) {
+            return Common.badRequestWrapper("Please select an organization.");
+        }
+        Integer userType = Integer.parseInt(hiddenUserType);
         String orcid = json.path("orcid").asText();
         String school = json.path("school").asText();
         String department = json.path("department").asText();

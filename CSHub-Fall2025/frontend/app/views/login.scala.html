@@ -8,13 +8,12 @@
     }
 
 @main("Login", scripts) {
-    @helper.form(routes.UserController.userLogin) {
+    @helper.form(routes.UserController.userLogin, 'class -> "form-signin") {
+        @CSRF.formField
         <div class="container">
             <div class="row">
                 <div class="col m6 s12 offset-m3" style="top: ">
                     <div class="card-panel z-depth-0">
-                        <form class="form-signin" onsubmit="return checkFormValid();">
-                        @*<form class="form-signin" enctype="multipart/form-data" method="post" action="@routes.UserController.userLogin()">*@
                         <h3 class="form-signin-heading" align="center">Log in</h3>
                             <div class="row">
                                 <div class="input-field col s12">
@@ -68,7 +67,6 @@
                                 </span>
                             </div>
 
-                        </form>
                     </div>
                 </div>
             </div>

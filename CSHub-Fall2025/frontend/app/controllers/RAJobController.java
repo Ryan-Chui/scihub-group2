@@ -365,7 +365,9 @@ public class RAJobController extends Controller {
 
     @With(OperationLoggingAction.class)
     public Result interviewCalendar() {
-        checkLoginStatus();
+        if (session("id") == null || session("username") == null) {
+            return redirect(routes.Application.login());
+        }
         try {
             String userId = session("id");
             JsonNode interviews = RESTfulCalls.getAPI(RESTfulCalls.getBackendAPIUrl(config,
@@ -382,7 +384,9 @@ public class RAJobController extends Controller {
     }
 
     public Result rescheduleInterview(Long rajobApplicationId) {
-        checkLoginStatus();
+        if (session("id") == null || session("username") == null) {
+            return redirect(routes.Application.login());
+        }
         try {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
             ObjectNode payload = Json.newObject();
@@ -402,7 +406,9 @@ public class RAJobController extends Controller {
     }
 
     public Result cancelInterview(Long rajobApplicationId) {
-        checkLoginStatus();
+        if (session("id") == null || session("username") == null) {
+            return redirect(routes.Application.login());
+        }
         try {
             Map<String, String[]> formData = request().body().asFormUrlEncoded();
             ObjectNode payload = Json.newObject();
