@@ -31,16 +31,7 @@
 
             function checkFormValid() {
 
-                var userTypes = 0;
-                var userTypesChecked = false;
-                for (var i = 0; i < document.getElementsByName("userTypes").length; i++) {
-                    var userType = document.getElementsByName("userTypes")[i];
-                    if (userType.checked) {
-                        userTypes = parseInt(userType.value);
-                        userTypesChecked = true;
-                    }
-                }
-                document.getElementById("hiddenUserType").value = userTypes;
+                var userTypesChecked = updateHiddenUserType();
 
                 if (!userTypesChecked) {
                     var userTypeError = document.getElementById("userTypeError");
@@ -68,7 +59,22 @@
                 return true;
             }
 
+            function updateHiddenUserType() {
+                var userTypes = 0;
+                var userTypesChecked = false;
+                for (var i = 0; i < document.getElementsByName("userTypes").length; i++) {
+                    var userType = document.getElementsByName("userTypes")[i];
+                    if (userType.checked) {
+                        userTypes = parseInt(userType.value);
+                        userTypesChecked = true;
+                    }
+                }
+                document.getElementById("hiddenUserType").value = userTypesChecked ? userTypes : "";
+                return userTypesChecked;
+            }
+
             function hiddenOrNot(userType) {
+                updateHiddenUserType();
                 var hiddenDiv = "divHidden" + userType;
                 for (var i = 0; i < document.getElementsByName(hiddenDiv).length; i++) {
                     var div = document.getElementsByName(hiddenDiv)[i];
@@ -245,7 +251,6 @@
 @*                                        <option value="@organizations.get(0).getId()" selected="false">@organizations.get(0).getOrganizationName()</option>*@
 @*                                        <option value="">vad</option>*@
                                     </select>
-                                    <input type="text" name="organization" id="organization" class="validate">
                                     <label for="organization">Organization</label>
                                     <span id="organizationMsg" class="helper-text" data-error=""></span>
                                 </div>
@@ -315,7 +320,7 @@
                                     </label>
                                 </div>
                                 <div class="col s12 m4">
-                                    <label><input type="radio" name="userTypes" id="userType2" value="2"><span>Sponsor</span></label>
+                                    <label><input type="radio" name="userTypes" id="userType2" value="2" onchange="updateHiddenUserType()"><span>Sponsor</span></label>
                                 </div>
                                 <div class="col s12 m4">
                                     <label><input type="radio" name="userTypes" id="userType4" value="4" onchange='hiddenOrNot("Student")'><span>Student</span></label>

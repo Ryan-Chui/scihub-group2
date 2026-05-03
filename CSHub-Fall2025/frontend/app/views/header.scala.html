@@ -1,6 +1,7 @@
 @()(implicit request: RequestHeader)
 
 @defining(session.get("userTypes")) { userTypes =>
+@defining(session.get("email") != null) { isLoggedIn =>
 
 <div class="navbar-fixed" style="z-index: 9999;">
     <nav class="blue darken-4" style='background: url("@routes.Assets.at("images/starfield-banner-blue.jpg")") repeat;
@@ -18,7 +19,7 @@
                 <a href="#" data-target="nav-right" class="sidenav-trigger right"><i class="material-icons">menu</i></a>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="@routes.Application.home()" title="Home"><i class="material-icons">home</i></a></li>
-                    @if(!session.get("email")) {
+                    @if(!isLoggedIn) {
                         <li class="dropdown">
                             <a href="#" class="dropdown-trigger" data-target="dropdown-About" title = "About"><i class="material-icons">
                                 help</i></a>
@@ -59,7 +60,7 @@
                     }
 
 
-                    @if(session.get("email")) {
+                    @if(isLoggedIn) {
                         <li class="dropdown">
                             <a href="#" class="dropdown-trigger" data-target="dropdown-Organizations">
                                 Organization</a>
@@ -270,7 +271,7 @@
 
 
 
-                    @if(!session.get("email")) {
+                    @if(!isLoggedIn) {
                         <li style="margin-right: 10px;">
                             <a href="@routes.Application.login()" title="Login">
                             Sign in
@@ -320,7 +321,7 @@
                         <li>
                             <a href="@routes.Application.home()">Home</a>
                         </li>
-                        @if(!session.get("email")) {
+                        @if(!isLoggedIn) {
                             <li>
                                 <a href="#">About</a>
                                 <ul class="sub-menu">
@@ -450,4 +451,5 @@
             });
         });
 </script>
+}
 }

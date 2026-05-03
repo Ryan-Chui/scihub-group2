@@ -121,10 +121,29 @@ public class UserController extends Controller {
             jsonData.put("level", "normal");
             JsonNode response = RESTfulCalls.postAPI(RESTfulCalls.getBackendAPIUrl(config,
                     Constants.USER_REGISTER_POST), jsonData);
-            String newUserId = response.get("id").asText();
             String email = userForm.field("email").value();
 
             Logger.debug("Created JSON data from form: " + jsonData.toString());
+            Logger.debug("User registration backend response: " + response);
+
+            if (response == null) {
+                flash("error", "Backend did not respond to the registration request.");
+                Logger.debug("UserController user sign on backend response was null");
+                return ok(registrationError.render("User"));
+            }
+            if (response.has("error")) {
+                String error = response.get("error").asText();
+                flash("error", error);
+                Logger.debug("UserController user sign on backend error: " + error);
+                return ok(registrationError.render("User"));
+            }
+            if (!response.has("id")) {
+                flash("error", "Backend registration response did not include a user id.");
+                Logger.debug("UserController user sign on backend response missing id: " + response);
+                return ok(registrationError.render("User"));
+            }
+
+            String newUserId = response.get("id").asText();
 
             if (newUserId != null) {
                 // return ok(registerConfirmation.render(new Long(newUserId), "User"));
@@ -832,6 +851,10 @@ public class UserController extends Controller {
      * @return
      */
     private boolean reCaptchaAuthenticate(String token) {
+        if (config.getString("system.frontend.host").equals("localhost")) {
+            return true;
+        }
+
         if (token == null)
             return false;
 

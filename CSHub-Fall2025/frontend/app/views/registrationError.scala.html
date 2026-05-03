@@ -12,6 +12,9 @@
                 <div class="card-panel">
                 <h5>@registeredType not registered!</h5>
                     <h6>Unfortunately, your @registeredType could not be registered. Please try again later.</h6>
+                    @if(flash.contains("error")) {
+                        <p class="red-text">@flash.get("error")</p>
+                    }
                     <br>
                     <span id="show"></span>
                 </div>

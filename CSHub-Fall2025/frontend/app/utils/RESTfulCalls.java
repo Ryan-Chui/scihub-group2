@@ -209,6 +209,11 @@ public class RESTfulCalls {
                         return createResponse(ResponseType.SUCCESS);
                     }
                 } else { // other response status from the server
+                    try {
+                        return response.asJson();
+                    } catch (Exception e) {
+                        Logger.debug("RESTfulCalls.postAPI(): non-JSON error response: " + response.getBody());
+                    }
                     return createResponse(ResponseType.SAVEERROR);
                 }
             }
